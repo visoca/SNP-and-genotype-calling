@@ -1,6 +1,22 @@
+*Advanced Stastics NGS Module, University of Sheffield*
+
 # SNP and genotype calling
 
-We will be using a dataset of X individuals of Heliconius melpomene for this SNP calling tutorial. We will learn how to identify variants and 
+#### Victor Soria-Carrasco
+
+The aim of this practical is to learn how to call SNPs and genotypes. We will be using a dataset of whole genome sequence data of X individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses 
+
+### Resources
+* [samtools manual](http://www.htslib.org/doc/samtools.html)
+* [bcftools manual](http://www.htslib.org/doc/bcftools.html)
+* [bcftools howto](http://samtools.github.io/bcftools/howtos/index.html)
+* [GATK User Guide](https://software.broadinstitute.org/gatk/documentation/quickstart?v=4)
+* [Van der Auwera et al. 2013](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4243306/) - GATK Best Practices for Variant Discovery for beginners. Note some procedures may be out-dated, check the current documentation.
+* [ANGSD manual](http://www.popgen.dk/angsd/index.php/ANGSD)
+* PCA ref
+* [Korneliussen et al. 2014](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-014-0356-4) ANGSD publication
+* [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
+Add key Heliconius references??
 
 ## Initial set up
 We will be using the University of Sheffield HPC cluster [ShARC](https://www.sheffield.ac.uk/cics/research/hpc/sharc) and several programmes installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/). Please ensure you have set up your account to use the repository. If the repository is set up correctly, you should see the following message every time you call an interactive job in a working node:
@@ -20,19 +36,26 @@ Remember you can check your current working directory anytime with the command `
 It should show something like:
 ```bash
 pwd
-/fastdata/bo11zzz/varcal
+/fastdata/bo11xxx/varcal
 ```
 
 ## Programmes
-We are going to use three different tools for SNP calling: [samtools/bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
+We are going to use three different tools for SNP calling: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally,[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
 
 ## Data
+We will need to copy the reference genome and the alignments in BAM format produced in the previous sessions to `/fastdata/$USER/varcal/alignments`. If you don't have such data, there are files are available in ` /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data`, e.g.:
+```bash
+cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/genome /fastdata/$USER/varcal/
+cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/alignments /fastdata/$USER/varcal/
+```
 
-## samtools/bcftools SNP calling
+
+## BCFtools SNP calling
 To speed things up, we will be restricting variant calling to 10 scaffolds that cover X bp.
+
 ## GATK SNP calling
 
-## ANGSD SNP calling
+## ANGSD SNP calling (optional)
 
 ## VCF and BCF formats
 The most popular text-file format for storing genetic variation information is the [Variant Call Format (VCF)](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)). There are different versions of the format, but the core elements are the same. You can find a full description of the latest iteration [here](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf).Due to the large amount of data usually involved, files tend to be stored compressed. 
