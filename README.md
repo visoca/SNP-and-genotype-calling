@@ -1,8 +1,7 @@
-**_Advanced Data Analysis - Module 5 - Intro to NGS data analysis_**<br>
+**_Advanced Data Analysis - Introduction to NGS data analysis_**<br>
 *Department of Animal and Plant Sciences, University of Sheffield*
 
 # SNP and genotype calling
-
 #### Victor Soria-Carrasco
 
 The aim of this practical is to learn how to call SNPs and genotypes. We will be using a dataset of whole genome sequence data of X individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses 
