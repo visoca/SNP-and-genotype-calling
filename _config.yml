@@ -1,4 +1,4 @@
 plugins:
   - jekyll-remote-theme
 
-remote_theme: benbalter/retlab
+remote_theme: pixeldroid/programming-pages
