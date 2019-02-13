@@ -4,7 +4,7 @@
 # SNP and genotype calling
 #### Victor Soria-Carrasco
 
-The aim of this practical is to learn how to call SNPs and genotypes. We will be using a dataset of whole genome sequence data of X individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses 
+The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses 
 
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
@@ -51,7 +51,11 @@ cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/alignments /fast
 
 
 ## BCFtools SNP calling
-To speed things up, we will be restricting variant calling to 10 scaffolds that cover X bp.
+BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 10 scaffolds that cover X bp. Before calling SNPs, we have to index the genome using
+When the job has finished, we will proceed to merge all the bcf files:
+```bash
+  
+```
 
 ## GATK SNP calling
 
