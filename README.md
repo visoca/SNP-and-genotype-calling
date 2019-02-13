@@ -1,14 +1,3 @@
----
-layout: example
-
-code:
-  - { label: workflow.dot, url: workflow.dot, language: dot }
-  - { label: command line, url: invocation.console, language: console }
-thumb: workflow.dot.png
-title: Using the example layout
-description: how to use the `example` layout
----
-
 **_Advanced Data Analysis - Introduction to NGS data analysis_**<br>
 *Department of Animal and Plant Sciences, University of Sheffield*
 
