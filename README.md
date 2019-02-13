@@ -19,14 +19,9 @@ The aim of this practical is to learn how to call single nucleotide polymorphism
 Add key Heliconius references??
 
 ## Initial set up
-We will be using the University of Sheffield HPC cluster [ShARC](https://www.sheffield.ac.uk/cics/research/hpc/sharc) and several programmes installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/). Please ensure you have set up your account to use the repository. If the repository is set up correctly, you should see the following message every time you call an interactive job in a working node:
-```
-  Your account is set up to use the Genomics Software Repository
-    More info: http://soria-carrasco.staff.shef.ac.uk/softrepo
-```
-If you are interested in knowing what software is currently installed, you can use the command `softrepo`.
+First of all, please remind that this tutorial must be run using an interactive session in ShARC. For that, you should log in into ShARC with `ssh`, and then request an interactive session with `qrsh`. Your shell prompt should show `sharc-nodeXXX` (XXX being a number between 001 and 172) and not `@sharc-login1` nor `@sharc-login2`.
 
-For this particular tutorial, it is expected that you will be working on a directory called `varcal` in your /fastdata/$USER directory:
+For this particular tutorial, we are going to create and work on a directory called `varcal` in your /fastdata/$USER directory:
 ```bash
 cd /fastdata/$USER
 mkdir varcal
@@ -36,8 +31,8 @@ Remember you can check your current working directory anytime with the command `
 It should show something like:
 ```bash
 pwd
-/fastdata/bo11xxx/varcal
 ```
+>`´/fastdata/myuser/varcal`´<br>
 
 ## Programmes
 We are going to use three different tools for SNP calling: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally,[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
@@ -52,7 +47,22 @@ Now we need to copy the alignments in BAM format produced in the previous sessio
 ```bash
 cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/varcal/alignments ./
 ```
-We also need to download the reference genome:
+It is very important that all the BAM files are indexed, which can be done the following way:
+```bash
+ls alignments/*.bam | xargs -I {} sh -c 'samtools index {}'
+```
+The files should look like this:
+```bash
+ls -lh alignments
+```
+>``-rw-r--r--   1 myuser bo 1.9G Feb 13 04:29 60A.bam``<br>
+>``-rw-r--r--   1 myuser bo 482K Feb 13 04:30 60A.bam.bai``<br>
+>``-rw-r--r--   1 myuser bo 1.7G Feb 13 04:29 60I.bam``<br>
+>``-rw-r--r--   1 myuser bo 468K Feb 13 04:29 60I.bam.bai``<br>
+>``-rw-r--r--   1 myuser bo 2.1G Feb 13 04:31 61A.bam``<br>
+>``-rw-r--r--   1 myuser bo 586K Feb 13 04:31 61A.bam.bai``<br>
+
+Lastly, we also need to download the reference genome:
 ```bash
 mkdir genome
 wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel2_-_scaffolds.fa.gz -O genome/Hmel2.fa.gz
@@ -73,19 +83,15 @@ This will produce two index files:
 >``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.gz.fai``<br>
 >``-rw-r--r-- 1 myuser cs 66K Feb 13 17:11 Hmel2.fa.gz.gzi``<br>
 
-```bash
- ls -lh genome
-```
-
 We are going to prepare now a batch script to call SNPs and genotypes for all 32 individuals. To speed things up, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) to call SNPs for three scaffolds (Hmel201001, Hmel201002, and Hmel201003) in parallel:
 
 ```bash {.line-numbers}
 #!/bin/bash
-#$ -l h_rt=7:00:00
+#$ -l h_rt=2:00:00
 #$ -l mem=2G
 #$ -t 1-3
-##$ -m bea
-##$ -M myemail@mail.com
+#$ -m bea
+#$ -M myemail@mail.com
 #$ -j y
 #$ -o bcftools.log
 #$ -N bcftools
@@ -101,23 +107,40 @@ echo "==========================================================================
 # (safer to load it here in case the worker nodes don't inherit the environment)
 source /usr/local/extras/Genomics/.bashrc 
 
+# Path to the genome
 GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa.gz
+# Path to directory with BAM files
 ALIDIR=/fastdata/$USER/varcal/alignments
+# Path to output directory
 OUTDIR=/fastdata/$USER/varcal/bcftools
+
+# Regions (=scaffolds) that will be analysed
+# There must be as many as tasks are specified above with '#$ -t'
 REGIONS=(Hmel201001 Hmel201002 Hmel201003)
 
 # Create output directory
 mkdir -p $OUTDIR 
 
+# Change to alignment dir
 cd $ALIDIR
 
 # Call SNPs and genotypes with bcftools
+#  mpileup
+#   * -q 20: filter out alignments with mapping quality <20
+#   * -Q 20: filter bases with QS < 20
+#   * -P ILLUMINA: restrict to Illumina platform for indels
+#  call
+#   * -m: use the multiallelic caller
+#   * -v: output variants only
+#   * -P 1e-6: prior on mutation rate
+
 bcftools mpileup -Ou \
+--max-depth 10000 \
 -q 20 -Q 20 -P ILLUMINA \
 -f $GENOME \
 -r ${REGIONS[$I]} *.bam | \
 bcftools call -mv \
--p 0.05 \
+-P 1e-6 \
 -O b \
 -o $OUTDIR/bcftools-${REGIONS[$I]}.bcf
 
@@ -127,15 +150,10 @@ bcftools index $OUTDIR/bcftools-${REGIONS[$I]}.bcf
 echo "=============================================================================="
 date
 ```
-Calling SNPs with bcftools is a two-step process, 
-When the job has finished, we will proceed to merge all the bcf files:
+Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimate genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` do identify both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are also filtering out sites with base quality (BQ) <20 (-q 20) and alignemnts with mapping quality (MQ) <20 (-Q 20) and restrict the indel to ILLUMINA platform. We will use the multiallelic caller (-m), which allow more than two alleles, output only variant (-v), and use a relatively stringent prior for the expected subsitution rate (-P 1e-6). Lastly, we are saving the output in BCF format, which is the binary version of VCF (more details below).
 
-## GATK SNP calling
-
-## ANGSD SNP calling (optional)
-
-## VCF and BCF formats
-The most popular text-file format for storing genetic variation information is the [Variant Call Format (VCF)](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)). There are different versions of the format, but the core elements are the same. You can find a full description of the latest iteration [here](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf).Due to the large amount of data usually involved, files tend to be stored compressed. 
+## VCF and BCF format
+The most popular text-file format for storing genetic variation information is the [Variant Call Format (VCF)](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)). There are different versions of the format, but the core elements are the same. You can find a full description of the latest iteration [here](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf).Due to the large amount of data usually involved, files tend to be stored compressed. BCF is the binary version of VCF, which keeps the same information, but compressed and indexed. It  is designed to be much more efficient to process and store large amounts of data. The practical downside is that the contents can only be accessed with `bcftools view`.
 
 The VCF format is composed of meta-information lines (prefixed wih ##), a header line (prefixed with #), and data lines each containing information about a position in the genome and genotype information on samples for each position (text fields separated by tabs). There are 8 fixed field lines, usually followed by an additional FORMAT field and an arbitrary number of sample fields when genotypes are included.
 
@@ -158,6 +176,16 @@ Let's now have a look at our files:
 ```bash
 bcftools view varcal.bcf
 ```
+
+## Operations with VCF/BCF files
+
+When the job has finished, we will proceed to merge all the bcf files:
+
+
+## GATK SNP calling
+
+## ANGSD SNP calling (optional)
+
 
 ## Subsetting SNPs
 ### Extracting a set of SNPs for a region
