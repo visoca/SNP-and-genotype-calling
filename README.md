@@ -43,19 +43,92 @@ pwd
 We are going to use three different tools for SNP calling: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally,[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
 
 ## Data
-We will need to copy the reference genome and the alignments in BAM format produced in the previous sessions to `/fastdata/$USER/varcal/alignments`. If you don't have such data, there are files are available in ` /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data`, e.g.:
+We are going to use the directory `/fastdata/$USER/varcal` as the base working directory for this tutorial, let's create and change to it:
 ```bash
-cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/genome /fastdata/$USER/varcal/
-cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/alignments /fastdata/$USER/varcal/
+mkdir -p /fastdata/$USER/varcal
+cd /fastdata/$USER/varcal
 ```
-
+Now we need to copy the alignments in BAM format produced in the previous sessions to `/fastdata/$USER/varcal/alignments`. If you don't have such data, there are files are available in ` /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/varcal/bams`, e.g.:
+```bash
+cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/varcal/alignments ./
+```
+We also need to download the reference genome:
+```bash
+mkdir genome
+wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel2_-_scaffolds.fa.gz -O genome/Hmel2.fa.gz
+```
 
 ## BCFtools SNP calling
-BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 10 scaffolds that cover X bp. Before calling SNPs, we have to index the genome using
-When the job has finished, we will proceed to merge all the bcf files:
+BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to index the genome using samtools. We can keep the genome compressed to save space - which is always a good idea when working with NGS data -, but we have to use bgzip (part of samtools) instead of gzip:
 ```bash
-  
+gzip -d genome/Hmel2.fa.gz
+bgzip genome/Hmel2.fa
+samtools faidx genome/Hmel2.fa.gz
 ```
+This will produce two index files:
+```bash
+ ls -lh genome
+```
+>``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa.gz``<br>
+>``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.gz.fai``<br>
+>``-rw-r--r-- 1 myuser cs 66K Feb 13 17:11 Hmel2.fa.gz.gzi``<br>
+
+```bash
+ ls -lh genome
+```
+
+We are going to prepare now a batch script to call SNPs and genotypes for all 32 individuals. To speed things up, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) to call SNPs for three scaffolds (Hmel201001, Hmel201002, and Hmel201003) in parallel:
+
+```bash {.line-numbers}
+#!/bin/bash
+#$ -l h_rt=7:00:00
+#$ -l mem=2G
+#$ -t 1-3
+##$ -m bea
+##$ -M myemail@mail.com
+#$ -j y
+#$ -o bcftools.log
+#$ -N bcftools
+
+# internal SGE task index
+I=$(($SGE_TASK_ID-1))
+
+hostname
+date
+echo "=============================================================================="
+
+# Load genomics software repository
+# (safer to load it here in case the worker nodes don't inherit the environment)
+source /usr/local/extras/Genomics/.bashrc 
+
+GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa.gz
+ALIDIR=/fastdata/$USER/varcal/alignments
+OUTDIR=/fastdata/$USER/varcal/bcftools
+REGIONS=(Hmel201001 Hmel201002 Hmel201003)
+
+# Create output directory
+mkdir -p $OUTDIR 
+
+cd $ALIDIR
+
+# Call SNPs and genotypes with bcftools
+bcftools mpileup -Ou \
+-q 20 -Q 20 -P ILLUMINA \
+-f $GENOME \
+-r ${REGIONS[$I]} *.bam | \
+bcftools call -mv \
+-p 0.05 \
+-O b \
+-o $OUTDIR/bcftools-${REGIONS[$I]}.bcf
+
+# Index bcf file
+bcftools index $OUTDIR/bcftools-${REGIONS[$I]}.bcf
+
+echo "=============================================================================="
+date
+```
+Calling SNPs with bcftools is a two-step process, 
+When the job has finished, we will proceed to merge all the bcf files:
 
 ## GATK SNP calling
 
