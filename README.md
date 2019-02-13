@@ -1,3 +1,14 @@
+---
+layout: example
+
+code:
+  - { label: workflow.dot, url: workflow.dot, language: dot }
+  - { label: command line, url: invocation.console, language: console }
+thumb: workflow.dot.png
+title: Using the example layout
+description: how to use the `example` layout
+---
+
 **_Advanced Data Analysis - Introduction to NGS data analysis_**<br>
 *Department of Animal and Plant Sciences, University of Sheffield*
 
@@ -6,11 +17,6 @@
 
 The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses 
 
----
-layout: "Resources"
-thumb: string
-title: string
----
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
 * [bcftools manual](http://www.htslib.org/doc/bcftools.html)
