@@ -1,4 +1,5 @@
-*Advanced Stastics NGS Module, University of Sheffield*
+**_Advanced Data Analysis - Module 5 - Intro to NGS data analysis_**<br>
+*Department of Animal and Plant Sciences, University of Sheffield*
 
 # SNP and genotype calling
 
