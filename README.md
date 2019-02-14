@@ -62,7 +62,7 @@ ls -lh alignments
 >``-rw-r--r--   1 myuser bo 2.1G Feb 13 04:31 61A.bam``<br>
 >``-rw-r--r--   1 myuser bo 586K Feb 13 04:31 61A.bam.bai``<br>
 
-Lastly, we also need to download the reference genome:
+Lastly, we also need to download the reference genome, you can do it using [wget](https://www.gnu.org/software/wget/manual/wget.html) (remember that you can also read the manual on the command line with `man wget`):
 ```bash
 mkdir genome
 wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel2_-_scaffolds.fa.gz -O genome/Hmel2.fa.gz
