@@ -191,7 +191,7 @@ Column Number| Title | Description
 7 | FILTER | Filter status ('.' if unfiltered or hard-filtered, PASS or a semicolon-separated list of codes for filters that fail if soft-filtered)
 8 | INFO | List of variant annotations delimited by ';' and as specified in the meta-information lines
 9 | FORMAT | Describes the format for the sample genotype information in column 10 onward
-10 to end | Sample id (from SM tag in BAM file RG string) | Sample genotype information. Usually stores the genotype call (GT), genotype likelihoods (GL or PL (phred-scaled)), depth (DP), and genotype quality (GQ).
+10 to end | Sample id (from SM tag in BAM file RG string) | Sample genotype information. Usually stores the genotype call (GT), genotype likelihoods (GL or PL (phred-scaled)), depth (DP), allelic depth (AD), and genotype quality (GQ).
  
 Let's now have a look at our files:
 ```bash
