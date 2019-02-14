@@ -35,7 +35,7 @@ pwd
 >`´/fastdata/myuser/varcal`´<br>
 
 ## Programmes
-There are many different tools for SNP calling, we are going to use three of the most popular: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally,[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
+There are many different tools for SNP calling, we are going to use three of the most popular: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally,[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files and picard tools for adding information about read groups to BAM files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
 
 ## Data
 We are going to use the directory `/fastdata/$USER/varcal` as the base working directory for this tutorial, let's create and change to it:
@@ -68,7 +68,7 @@ mkdir genome
 wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel2_-_scaffolds.fa.gz -O genome/Hmel2.fa.gz
 ```
 
-## BCFtools SNP calling
+## SNP and genotype calling with BCFtools
 BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to index the genome using samtools. We can keep the genome compressed to save space - which is always a good idea when working with NGS data -, but we have to use bgzip (part of samtools) instead of gzip:
 ```bash
 gzip -d genome/Hmel2.fa.gz
@@ -137,19 +137,23 @@ cd $ALIDIR
 #   * -q 20: filter out alignments with mapping quality <20
 #   * -Q 20: filter bases with QS < 20
 #   * -P ILLUMINA: restrict to Illumina platform for indels
+#   * -a FORMAT/DP,FORMAT/AD: output depth and allelic depth
 #  call
 #   * -m: use the multiallelic caller
 #   * -v: output variants only
-#   * -P 1e-6: prior on mutation rate
+#   * -P 1e-6: prior on mutation rate: 
+#   * -f GQ: ouput genotype quality
 #   * -O b: output in BCF format
 
 bcftools mpileup -Ou \
 --max-depth 10000 \
 -q 20 -Q 20 -P ILLUMINA \
+-a FORMAT/DP,FORMAT/AD \
 -f $GENOME \
 -r ${REGIONS[$I]} *.bam 2> $LOG | \
 bcftools call -mv \
 -P 1e-6 \
+-f GQ \
 -O b \
 -o $OUTDIR/bcftools-${REGIONS[$I]}.bcf >> $LOG 2>&1
 
@@ -160,9 +164,9 @@ bcftools index $OUTDIR/bcftools-${REGIONS[$I]}.bcf
 echo "=============================================================================="
 date
 ```
-Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimate genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` do identify both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are also filtering out sites with base quality (BQ) <20 (-q 20) and alignemnts with mapping quality (MQ) <20 (-Q 20) and restrict the indel to ILLUMINA platform. We will use the multiallelic caller (-m), which allow more than two alleles, output only variant (-v), and use a relatively stringent prior for the expected subsitution rate (-P 1e-6). Lastly, we are saving the output in BCF format (-O b), which is the binary version of VCF (more details below).
+Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimate genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` do identify both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are also filtering out sites with base quality (BQ) <20 (-q 20) and alignmEnts with mapping quality (MQ) <20 (-Q 20), restrict the indel to ILLUMINA platform, and output the depth and allelic depth for each site and sample (-a FORMAT/DP, FORMAT/AD). We will use the multiallelic caller (-m), which allows more than two alleles, output only variant (-v), use a relatively stringent prior for the expected subsitution rate (-P 1e-6), and output genotype quality (-f GQ). Lastly, we are saving the output in BCF format (-O b), which is the binary version of VCF (more details below).
 
-When finished editing the bash script, save it as `bcftools.sh`, make it executable and submit to the job queue:
+When you have finished editing the bash script, save it as `bcftools.sh`, make it executable with `chmod` and submit it to the job queue with `qsub`:
 ```bash
 chmod +x bcftools.sh
 qsub bcftools.sh
@@ -187,7 +191,7 @@ Column Number| Title | Description
 7 | FILTER | Filter status ('.' if unfiltered or hard-filtered, PASS or a semicolon-separated list of codes for filters that fail if soft-filtered)
 8 | INFO | List of variant annotations delimited by ';' and as specified in the meta-information lines
 9 | FORMAT | Describes the format for the sample genotype information in column 10 onward
-10 to end | Sample id (from SM tag in BAM file RG string) | Sample genotype information (Usually also stores the genotype qualities (GQ) and genotype likelihoods (GL or PL (phred-scaled)
+10 to end | Sample id (from SM tag in BAM file RG string) | Sample genotype information. Usually stores the genotype call (GT), genotype likelihoods (GL or PL (phred-scaled)), depth (DP), and genotype quality (GQ).
  
 Let's now have a look at our files:
 ```bash
@@ -199,6 +203,128 @@ To focus only on the header of the SNPs, the flags `-h` and `-H` can be used:
 ```bash
 bcftools view -h bcftools/Hmel201001.bcf | less -S
 bcftools view -H bcftools/Hmel201001.bcf | less -S
+```
+
+## SNP and genotype calling with GATK
+GATK is another popular alternative. Before calling SNPs, we have to create the dictionary file for the genome:
+```bash
+gatk CreateSequenceDictionary -R genome/Hmel2.fa.gz -O genome/Hmel2.dict
+```
+This will produce a dictionary file:
+```bash
+ ls -lh genome
+```
+>``-rw-r--r-- 1 myuser cs  92K Feb 13 19:50 Hmel2.dict``<br>
+>``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa.gz``<br>
+>``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.gz.fai``<br>
+>``-rw-r--r-- 1 myuser cs 66K Feb 13 17:11 Hmel2.fa.gz.gzi``<br>
+
+Also, GATK it is noticeably more picky about the format in the BAM files, requiring to have read groups information appropriately encoded. Before running it, we will need to process the BAM files and add the read-groups information:
+```bash
+#!/bin/bash
+#$ -l h_rt=2:00:00
+#$ -l mem=4G
+#$ -t 1-32
+#$ -m bea
+#$ -M mymail@mail.com
+#$ -j y
+#$ -o rgsbams.log
+#$ -N rgsbams
+
+I=$(($SGE_TASK_ID-1))
+
+hostname
+date
+echo "=============================================================================="
+
+# Load genomics software repository
+source /usr/local/extras/Genomics/.bashrc 
+
+INDIR=/fastdata/$USER/varcal/alignments
+OUTDIR=/fastdata/$USER/varcal/alignments_rgs
+
+ALIS=($(ls $INDIR/*.bam))
+ALI=${ALIS[$I]}
+
+ID=$(basename $ALI)
+ID=$OUTDIR/${ID%.bam}
+LOG=$OUTDIR/$ID.log
+
+mkdir tmp >& /dev/null
+echo -n > $LOG
+
+picard AddOrReplaceReadGroups INPUT=$ALI SORT_ORDER=coordinate \
+RGID=$ID RGLB=$ID RGPL=ILLUMINA RGSM=$ID RGPU=$ID CREATE_INDEX=true \
+OUTPUT=${ALI%.bam}.rgs.bam 2>> $LOG
+
+# samtools index ${ALI%.bam}.rmdup.rg2.bam
+
+echo "=============================================================================="
+date
+```
+It takes a while - perhaps better to just copy the alignments??
+
+Now, let's prepare a batch script to run GATK:
+```bash
+#!/bin/bash
+#$ -l h_rt=7:00:00
+#$ -l mem=2G
+#$ -pe smp 4
+#$ -j y
+#$ -t 1-3
+#$ -o gatk.log
+#$ -N GATK
+
+I=$(($SGE_TASK_ID-1))
+
+hostname
+date
+echo "=============================================================================="
+
+# Load genomics software repository
+source /usr/local/extras/Genomics/.bashrc 
+
+GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa.gz
+ALIDIR=/fastdata/$USER/varcal/alignments_rgs
+OUTDIR=/fastdata/$USER/varcal/gatk
+REGIONS=(Hmel201001 Hmel201002 Hmel201003)
+
+# Create dictionary for genome
+# gatk CreateSequenceDictionary -R $GENOME -O ${GENOME%.fa}.dict
+
+cd $ALIDIR
+# String for alignments
+ALIGNMENTS=(*.rgs.bam)
+BAMS=$(printf -- '-I %s ' "${ALIGNMENTS[@]}")
+# String for regions
+REGS=$(printf -- '-L %s ' "${REGIONS[@]}")
+
+mkdir -p $OUTDIR >& /dev/null
+
+VCF=$OUTDIR/gatk-${REGIONS[$I]}.vcf
+BCF=$OUTDIR/gatk-${REGIONS[$I]}.bcf
+LOG=$OUTDIR/gatk-${REGIONS[$I]}.log
+
+# Run GATK
+gatk --java-options "-Xmx8g" HaplotypeCaller \
+--heterozygosity 0.01 \
+--base-quality-score-threshold 20 \
+--minimum-mapping-quality 20 \
+--output-mode EMIT_VARIANTS_ONLY \
+-R $GENOME \
+$BAMS \
+-L ${REGIONS[$I]} \
+-O $VCF >& $LOG
+
+bcftools view -O b $VCF > $BCF
+rm $VCF
+
+
+bcftools index $BCF
+
+echo "=============================================================================="
+date
+
 ```
 
 ## Operations with VCF/BCF files
@@ -225,15 +351,34 @@ bcftools view -H -v snps bcftools/bcftools-Hmel201001.bcf | awk '$5 ~ /,/' | les
 bcftools view -H -v snps -m 3 bcftools/bcftools-Hmel201001.bcf | less -S
 ```
 
-### Merging files
+### Merging and subsetting files
 Non-overlapping files with the same samples can be easily merged with `bcftools concat`. Let's merge the bcf files for our three scaffolds, index it and have a look:
 ```bash
 bcftools concat bcftools/*.bcf -O b -o bcftools/bcftools-concat.bcf
-bcftos index bcftools/bcftools-concat.bcf
+bcftools index bcftools/bcftools-concat.bcf
 bcftools view -H bcftools/bcftools-concat.bcf | less -S
 ```
+Likewise, we can subset SNPs within particular regions, for example to extract the variants within the region 5000-5500bp in scaffold Hmel201001 and 15000-20000 in Hmel201002:
+```bash
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201002:15000-20000 | less -S 
+```
+Subsetting a number of samples is also possible, for example to get only the first 10 samples and the last 10 samples:
+```bash
+SAMPLES=$(bcftools query -l bcftools/bcftools-concat.bcf | head -n 10 | tr '\n/' ','| sed 's/,$//')
+bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-first16.bcf
+bcftools index bcftools/bcftools-concat-first16.bcf
 
-## GATK SolNP calling
+SAMPLES=$(bcftools query -l bcftools/bcftools-concat.bcf | tail -n 10 | tr '\n/' ','| sed 's/,$//')
+bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-last16.bcf
+bcftools index bcftools/bcftools-concat-last16.bcf
+```
+And then merge them into a single file with `bcftools merge`:
+```bash
+bcftools merge bcftools/bcftools-concat-first16.bcf bcftools/bcftools-concat-last16.bcf -O b -o bcftools/bcftools-merge.bcf
+bcftools index bcftools/bcftools-merge.bcf
+```
+### Filtering
+
 
 ## ANGSD SNP calling (optional)
 
