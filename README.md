@@ -85,7 +85,7 @@ This will produce two index files:
 
 We are going to prepare now a batch script to call SNPs and genotypes for all 32 individuals. To speed things up, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) to call SNPs for three scaffolds (Hmel201001, Hmel201002, and Hmel201003) in parallel:
 
-```bash {.line-numbers}
+```bash
 #!/bin/bash
 #$ -l h_rt=2:00:00
 #$ -l mem=2G
