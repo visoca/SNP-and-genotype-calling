@@ -264,12 +264,14 @@ date
 ```
 It takes a while - perhaps better to just copy the alignments??
 
-Now, let's prepare a batch script to run GATK:
+Now, let's prepare a batch script to run GATK. We will run it in parallel for three scaffolds, using 4 threads for each task:
 ```bash
 #!/bin/bash
-#$ -l h_rt=7:00:00
+#$ -l h_rt=1:00:00
 #$ -l mem=2G
 #$ -pe smp 4
+#$ -m bea
+#$ -M mymail@mail.com
 #$ -j y
 #$ -t 1-3
 #$ -o gatk.log
@@ -379,17 +381,12 @@ bcftools index bcftools/bcftools-merge.bcf
 ```
 ### Filtering
 
+### Comparing and combining outputs
 
-## ANGSD SNP calling (optional)
 
 
-## Subsetting SNPs
-### Extracting a set of SNPs for a region
-### Extracting a set of SNPs for a set of individuals
+## ANGSD SNP calling (extra, optional)
 
-## Filtering SNPs
-
-## Comparing outputs
 
 ## Extras
 ### Population structure with NGSADMIX
