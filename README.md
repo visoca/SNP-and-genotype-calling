@@ -7,10 +7,18 @@
 The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
 ## Table of contents
-[SNP and genotype calling with BCFtools](#SNP-and-genotype-calling-with-BCFtools)<br>
+[SNP and genotype calling with __BCFtools__](#SNP-and-genotype-calling-with-BCFtools)<br>
 [VCF and BCF format](#VCF-and-BCF-format)<br>
-[SNP and genotype calling with GATK](#SNP-and-genotype-calling-with-GATK)<br>
-[Operations with VCF/BCF files](#Operations-with-VCF/BCF-files)<br>
+[SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)<br>
+[Operations with BCF files](#Operations-with-BCF-files)<br>
+Extras:
+[SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)
+[Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)
+[PCA of genoypes with R](#PCA-of-genoypes-with-R)
+[Differentiation genome scans using pairwise FSTs](#Differentiation-genome-scans-using-pairwise-FSTs)
+
+---
+---
 
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
@@ -393,7 +401,7 @@ date
 
 
 
-## Operations with VCF/BCF files
+## Operations with BCF files
 ### Samples and SNPs 
 A list of the samples contained in the file can be obtained using simple linux commands or `bcftools query`, and can be counted with `wc`:
 ```bash
@@ -448,12 +456,15 @@ bcftools index bcftools/bcftools-merge.bcf
 ### Comparing and combining outputs
 
 
+---
+---
 
-## ANGSD SNP calling (extra, optional)
+All the following steps are optional extras
+
+## SNP and genotype calling with ANGSD
 
 
-## Extras
-### Population structure with NGSADMIX
-### PCA of genoypes with R
-### Quick genome scan using pairwise FSTs
+## Population structure with NGSADMIX
+## PCA of genoypes with R
+## Differentiation genome scans using pairwise FSTs
 
