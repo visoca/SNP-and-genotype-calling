@@ -4,7 +4,7 @@
 # SNP and genotype calling
 #### Victor Soria-Carrasco
 
-The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses 
+The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
@@ -190,10 +190,38 @@ When you have finished editing the bash script, save it as `bcftools.sh`, make i
 chmod +x bcftools.sh
 qsub bcftools.sh
 ```
-If all goes well, it should take no longer than a few minutes to get the jobs finished.
+If all goes well, it should take no longer than a few minutes to get the jobs finished. You should now have the following files:
+```ls -lh bcftools```
+
+>``total 1.6M
+>``-rw-r--r-- 1 myuser cs  72K Feb 15 18:46 bcftools-Hmel201001.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  176 Feb 15 18:46 bcftools-Hmel201001.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  505 Feb 15 18:46 bcftools-Hmel201001.log``<br>
+>``-rw-r--r-- 1 myuser cs 1.4M Feb 15 18:50 bcftools-Hmel201002.bcf``<br>
+>``-rw-r--r-- 1 myuser cs 1.5K Feb 15 18:50 bcftools-Hmel201002.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  505 Feb 15 18:50 bcftools-Hmel201002.log``<br>
+>``-rw-r--r-- 1 myuser cs  26K Feb 15 18:46 bcftools-Hmel201003.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  158 Feb 15 18:46 bcftools-Hmel201003.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  505 Feb 15 18:46 bcftools-Hmel201003.log``<br>
+
+and the content of the logfiles should look like this:
+
+```less bcftools/bcftools-Hmel201001.log ```
+
+>``sharc-node114.shef.ac.uk``<br>
+>``Fri 15 Feb 18:46:38 GMT 2019``<br>
+>``==============================================================================``<br>
+><br>
+>``  Your account is set up to use the Genomics Software Repository``<br>
+>``     More info: http://soria-carrasco.staff.shef.ac.uk/softrepo``<br>
+><br>
+>``Note: none of --samples-file, --ploidy or --ploidy-file given, assuming all sites are diploid``<br>
+>``[mpileup] 32 samples in 32 input files``<br>
+>``==============================================================================``<br>
+>``Fri 15 Feb 18:46:50 GMT 2019``<br>
 
 ## VCF and BCF format
-The most popular text-file format for storing genetic variation information is the [Variant Call Format (VCF)](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)). There are different versions of the format, but the core elements are the same. You can find a full description of the latest iteration [here](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf).Due to the large amount of data usually involved, files tend to be stored compressed. BCF is the binary version of VCF, which keeps the same information, but compressed and indexed. It  is designed to be much more efficient to process and store large amounts of data. The practical downside is that the contents can only be accessed with `bcftools view`.
+One of the most popular text-file formats for storing genetic variation information is the [Variant Call Format (VCF)](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)). There are different versions of the format, but the core elements are the same. You can find a full description of the latest iteration [here](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf).Due to the large amount of data usually involved, files tend to be stored compressed. BCF is the binary version of VCF, which keeps the same information, but compressed and indexed. It  is designed to be much more efficient to process and store large amounts of data. The practical downside is that the contents can only be accessed with `bcftools view`.
 
 The VCF format is composed of meta-information lines (prefixed wih ##), a header line (prefixed with #), and data lines each containing information about a position in the genome and genotype information on samples for each position (text fields separated by tabs). There are 8 fixed field lines, usually followed by an additional FORMAT field and an arbitrary number of sample fields when genotypes are included.
 
@@ -339,7 +367,6 @@ $BAMS \
 
 bcftools view -O b $VCF > $BCF
 rm $VCF
-
 
 bcftools index $BCF
 
