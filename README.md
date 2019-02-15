@@ -7,10 +7,11 @@
 The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
 ## Table of contents
-1. [SNP and genotype calling with __BCFtools__](#SNP-and-genotype-calling-with-BCFtools)<br>
-2. [VCF and BCF format](#VCF-and-BCF-format)<br>
-3. [SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)<br>
-4. [Operations with BCF files](#Operations-with-BCF-files)<br>
+1. [SNP and genotype calling with __BCFtools__](#SNP-and-genotype-calling-with-BCFtools)
+2. [VCF and BCF format](#VCF-and-BCF-format)
+3. [SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)
+4. [Operations with BCF files](#Operations-with-BCF-files)
+
 Extras:<br>
   * [SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)<br>
   * [Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)<br>
@@ -19,26 +20,6 @@ Extras:<br>
 
 ---
 ---
-
-### Resources
-* [samtools manual](http://www.htslib.org/doc/samtools.html)
-* [bcftools manual](http://www.htslib.org/doc/bcftools.html)
-* [bcftools howto](http://samtools.github.io/bcftools/howtos/index.html)
-* [GATK User Guide](https://software.broadinstitute.org/gatk/documentation/quickstart?v=4)
-* [ANGSD manual](http://www.popgen.dk/angsd/index.php/ANGSD)
-* [SAM/BAM format specification](https://samtools.github.io/hts-specs/SAMv1.pdf)
-* [VCF/BCF format specification](https://samtools.github.io/hts-specs/VCFv4.3.pdf)
-* [VCF/BCF format visual explanation](http://vcftools.sourceforge.net/VCF-poster.pdf) - __Highly recommended__
- 
-### References
-* [Li 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3198575/) - bcftools mpileup implementation
-* [Danacek et al 2014](http://samtools.github.io/bcftools/call-m.pdf) - bcftools multiallelic caller
-* [Van der Auwera et al. 2013](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4243306/) - GATK Best Practices for Variant Discovery for beginners. Note some procedures may be out-dated, check the current documentation.
-* [Novembre et al 2008](https://www.nature.com/articles/nature07331) - Example of using PCAs of genotypes to investigate population structure
-* [Korneliussen et al. 2014](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-014-0356-4) - ANGSD publication
-* [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
-
-Add key Heliconius references??
 
 ## Initial set up
 First of all, please remind that this tutorial must be run using an interactive session in ShARC. For that, you should log in into ShARC with `ssh`, and then request an interactive session with `qrsh`. Your shell prompt should show `sharc-nodeXXX` (XXX being a number between 001 and 172) and not `@sharc-login1` nor `@sharc-login2`.
@@ -468,3 +449,23 @@ All the following steps are optional extras
 ## PCA of genoypes with R
 ## Differentiation genome scans using pairwise FSTs
 
+
+### Resources
+* [samtools manual](http://www.htslib.org/doc/samtools.html)
+* [bcftools manual](http://www.htslib.org/doc/bcftools.html)
+* [bcftools howto](http://samtools.github.io/bcftools/howtos/index.html)
+* [GATK User Guide](https://software.broadinstitute.org/gatk/documentation/quickstart?v=4)
+* [ANGSD manual](http://www.popgen.dk/angsd/index.php/ANGSD)
+* [SAM/BAM format specification](https://samtools.github.io/hts-specs/SAMv1.pdf)
+* [VCF/BCF format specification](https://samtools.github.io/hts-specs/VCFv4.3.pdf)
+* [VCF/BCF format visual explanation](http://vcftools.sourceforge.net/VCF-poster.pdf) - __Highly recommended__
+ 
+### References
+* [Li 2011](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3198575/) - bcftools mpileup implementation
+* [Danacek et al 2014](http://samtools.github.io/bcftools/call-m.pdf) - bcftools multiallelic caller
+* [Van der Auwera et al. 2013](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4243306/) - GATK Best Practices for Variant Discovery for beginners. Note some procedures may be out-dated, check the current documentation.
+* [Novembre et al 2008](https://www.nature.com/articles/nature07331) - Example of using PCAs of genotypes to investigate population structure
+* [Korneliussen et al. 2014](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-014-0356-4) - ANGSD publication
+* [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
+
+Add key Heliconius references??
