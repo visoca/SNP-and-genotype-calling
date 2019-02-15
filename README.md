@@ -6,6 +6,19 @@
 
 The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
+## Table of contents
+[SNP and genotype calling with BCFtools](#una-prueba)
+
+##Title
+
+###Place 1
+
+Hello, this is some text to fill in this, [here](#place-2), is a link to the second place.
+
+###Place 2
+
+Place one has the fun times of linking here, but I can also link back [here](#place-1).
+
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
 * [bcftools manual](http://www.htslib.org/doc/bcftools.html)
@@ -75,6 +88,9 @@ Lastly, we also need to download the reference genome, you can do it using [wget
 mkdir genome
 wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel2_-_scaffolds.fa.gz -O genome/Hmel2.fa.gz
 ```
+
+---
+
 
 ## SNP and genotype calling with BCFtools
 BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to index the genome using samtools. We can keep the genome compressed to save space - which is always a good idea when working with NGS data -, but we have to use bgzip (part of samtools) instead of gzip:
