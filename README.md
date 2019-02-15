@@ -250,7 +250,7 @@ Let's now have a look at our files:
 ```bash
 bcftools view bcftools/Hmel201001.bcf | less -S
 ```
-The file starts with a few lines specifying the VCF and bcftools versions, the command used with `bcftools mpileup`, followed by a long list of the >700 scaffolds that comprise the genome assembly (starting with `##contig`), the descriptions of the fields for ALT, INFO, and FORMAT, and any additional commands run (`bcftools call` in this case).
+The file starts with a few lines specifying the VCF and bcftools versions, the command used with `bcftools mpileup`, followed by a long list of the >700 scaffolds that comprise the genome assembly (starting with `##contig`), the descriptions of the fields for ALT, INFO, and FORMAT, and any additional commands that were executed to produce this file (`bcftools call` in this case).
 
 To focus only on the header of the SNPs, the flags `-h` and `-H` can be used:
 ```bash
