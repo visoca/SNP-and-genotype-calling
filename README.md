@@ -87,7 +87,7 @@ We are going to prepare now a batch script to call SNPs and genotypes for all 32
 
 ```bash
 #!/bin/bash
-#$ -l h_rt=2:00:00
+#$ -l h_rt=1:00:00
 #$ -l mem=2G
 #$ -t 1-3
 #$ -m bea
@@ -99,6 +99,28 @@ We are going to prepare now a batch script to call SNPs and genotypes for all 32
 # internal SGE task index
 I=$(($SGE_TASK_ID-1))
 
+# Regions (=scaffolds) that will be analysed
+# There must be as many as tasks are specified above with '#$ -t'
+REGIONS=(Hmel201001 Hmel201002 Hmel201003)
+
+# Path to the genome
+GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa.gz
+
+# Path to directory with BAM files
+ALIDIR=/fastdata/$USER/varcal/alignments
+
+# Path to output directory
+OUTDIR=/fastdata/$USER/varcal/bcftools
+
+# Create output directory
+mkdir -p $OUTDIR >& /dev/null
+
+# Log for this region
+LOG=$OUTDIR/bcftools-${REGIONS[$I]}.log
+
+# Redirect all the following screen outputs to log file
+exec > $LOG 2>&1
+
 hostname
 date
 echo "=============================================================================="
@@ -106,20 +128,6 @@ echo "==========================================================================
 # Load genomics software repository
 # (safer to load it here in case the worker nodes don't inherit the environment)
 source /usr/local/extras/Genomics/.bashrc 
-
-# Regions (=scaffolds) that will be analysed
-# There must be as many as tasks are specified above with '#$ -t'
-REGIONS=(Hmel201001 Hmel201002 Hmel201003)
-
-# Path to the genome
-GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa.gz
-# Path to directory with BAM files
-ALIDIR=/fastdata/$USER/varcal/alignments
-# Path to output directory
-OUTDIR=/fastdata/$USER/varcal/bcftools
-
-# Create output directory
-mkdir -p $OUTDIR >& /dev/null
 
 # Output BCF for this region
 OUTBCF=$OUTDIR/bcftools-${REGIONS[$I]}.bcf
@@ -136,7 +144,7 @@ cd $ALIDIR
 #  mpileup
 #   * -q 20: filter out alignments with mapping quality <20
 #   * -Q 20: filter bases with QS < 20
-#   * -P ILLUMINA: restrict to Illumina platform for indels
+#   * -P ILLUMINA: use Illumina platform for indels
 #   * -a FORMAT/DP,FORMAT/AD: output depth and allelic depth
 #  call
 #   * -m: use the multiallelic caller
@@ -150,12 +158,12 @@ bcftools mpileup -Ou \
 -q 20 -Q 20 -P ILLUMINA \
 -a FORMAT/DP,FORMAT/AD \
 -f $GENOME \
--r ${REGIONS[$I]} *.bam 2> $LOG | \
+-r ${REGIONS[$I]} *.bam | \
 bcftools call -mv \
 -P 1e-6 \
 -f GQ \
 -O b \
--o $OUTDIR/bcftools-${REGIONS[$I]}.bcf >> $LOG 2>&1
+-o $OUTDIR/bcftools-${REGIONS[$I]}.bcf
 
 # Index bcf file
 bcftools index $OUTDIR/bcftools-${REGIONS[$I]}.bcf
@@ -164,7 +172,18 @@ bcftools index $OUTDIR/bcftools-${REGIONS[$I]}.bcf
 echo "=============================================================================="
 date
 ```
-Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimate genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` do identify both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are also filtering out sites with base quality (BQ) <20 (-q 20) and alignmEnts with mapping quality (MQ) <20 (-Q 20), restrict the indel to ILLUMINA platform, and output the depth and allelic depth for each site and sample (-a FORMAT/DP, FORMAT/AD). We will use the multiallelic caller (-m), which allows more than two alleles, output only variant (-v), use a relatively stringent prior for the expected subsitution rate (-P 1e-6), and output genotype quality (-f GQ). Lastly, we are saving the output in BCF format (-O b), which is the binary version of VCF (more details below).
+Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimate genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` do identify both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are using a number of non-default options:
+1. Estimating genotype likelihoods with `bcftools mpileup`:
+   * `-q 20`: filter out sites with base quality (BQ) <20
+   * `-Q 20`: filter out alignments with mapping quality (MQ) <20
+   * `-P ILLUMINA`: specify the platform from which indels are collected (Illumina in this case)
+   * `-a FORMAT/DP, FORMAT/AD`: output total depth (DP) and allelic depth (AD)
+2. Calling SNPs, indels and genotypes with `bcftools call`:
+   * `-m`: use the multiallelic caller, which implements a model that allows more than two alleles
+   * `-v`: output only variants
+   * `-P 1e-6`: use a relatively stringent mutation rate (the lower the more stringent)
+   * `-f GQ`: output genotype quality (GQ)
+   * `-O b`: output in BCF format, the binary version of VCF (more details below)
 
 When you have finished editing the bash script, save it as `bcftools.sh`, make it executable with `chmod` and submit it to the job queue with `qsub`:
 ```bash
@@ -264,12 +283,12 @@ date
 ```
 It takes a while - perhaps better to just copy the alignments??
 
-Now, let's prepare a batch script to run GATK. We will run it in parallel for three scaffolds, using 4 threads for each task:
+Now, let's prepare a batch script to run GATK. We will run it in parallel for three scaffolds, using 2 threads for each task:
 ```bash
 #!/bin/bash
 #$ -l h_rt=1:00:00
 #$ -l mem=2G
-#$ -pe smp 4
+#$ -pe smp 2
 #$ -m bea
 #$ -M mymail@mail.com
 #$ -j y
@@ -326,8 +345,9 @@ bcftools index $BCF
 
 echo "=============================================================================="
 date
-
 ```
+
+
 
 ## Operations with VCF/BCF files
 ### Samples and SNPs 
