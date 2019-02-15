@@ -8,8 +8,11 @@ The aim of this practical is to learn how to call single nucleotide polymorphism
 
 ## Table of contents
 [SNP and genotype calling with BCFtools](#SNP-and-genotype-calling-with-BCFtools)
+
 [VCF and BCF format](#VCF-and-BCF-format)
+
 [SNP and genotype calling with GATK](#SNP-and-genotype-calling-with-GATK)
+
 [Operations with VCF/BCF files](#Operations-with-VCF/BCF-files)
 
 ### Resources
