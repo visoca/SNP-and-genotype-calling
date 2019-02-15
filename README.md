@@ -12,10 +12,10 @@ The aim of this practical is to learn how to call single nucleotide polymorphism
 [SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)<br>
 [Operations with BCF files](#Operations-with-BCF-files)<br>
 Extras:<br>
-[SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)<br>
-[Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)<br>
-[PCA of genoypes with R](#PCA-of-genoypes-with-R)<br>
-[Differentiation genome scans using pairwise FSTs](#Differentiation-genome-scans-using-pairwise-FSTs)<br>
+  [SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)<br>
+  [Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)<br>
+  [PCA of genoypes with R](#PCA-of-genoypes-with-R)<br>
+  [Differentiation genome scans using pairwise FSTs](#Differentiation-genome-scans-using-pairwise-FSTs)<br>
 
 ---
 ---
