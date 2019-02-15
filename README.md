@@ -7,17 +7,7 @@
 The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
 ## Table of contents
-[SNP and genotype calling with BCFtools](#una-prueba)
-
-##Title
-
-###Place 1
-
-Hello, this is some text to fill in this, [here](#place-2), is a link to the second place.
-
-###Place 2
-
-Place one has the fun times of linking here, but I can also link back [here](#place-1).
+[SNP and genotype calling with BCFtools](#SNP-and-genotype-calling-with-BCFtools)
 
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
