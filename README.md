@@ -7,15 +7,15 @@
 The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
 ## Table of contents
-[SNP and genotype calling with __BCFtools__](#SNP-and-genotype-calling-with-BCFtools)<br>
-[VCF and BCF format](#VCF-and-BCF-format)<br>
-[SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)<br>
-[Operations with BCF files](#Operations-with-BCF-files)<br>
-Extras:<br>
-  [SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)<br>
-  [Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)<br>
-  [PCA of genoypes with R](#PCA-of-genoypes-with-R)<br>
-  [Differentiation genome scans using pairwise FSTs](#Differentiation-genome-scans-using-pairwise-FSTs)<br>
+1. [SNP and genotype calling with __BCFtools__](#SNP-and-genotype-calling-with-BCFtools)<br>
+2. [VCF and BCF format](#VCF-and-BCF-format)<br>
+3. [SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)<br>
+4. [Operations with BCF files](#Operations-with-BCF-files)<br>
+5. Extras:<br>
+  * [SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)<br>
+  * [Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)<br>
+  * [PCA of genoypes with R](#PCA-of-genoypes-with-R)<br>
+  * [Differentiation genome scans using pairwise FSTs](#Differentiation-genome-scans-using-pairwise-FSTs)<br>
 
 ---
 ---
