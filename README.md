@@ -11,7 +11,7 @@ The aim of this practical is to learn how to call single nucleotide polymorphism
 2. [VCF and BCF format](#VCF-and-BCF-format)<br>
 3. [SNP and genotype calling with __GATK__](#SNP-and-genotype-calling-with-GATK)<br>
 4. [Operations with BCF files](#Operations-with-BCF-files)<br>
-5. Extras:<br>
+Extras:<br>
   * [SNP and genotype calling with __ANGSD__](#ANGSD-SNP-and-genotype-calling)<br>
   * [Population structure with NGSADMIX](#Population-structure-with-NGSADMIX)<br>
   * [PCA of genoypes with R](#PCA-of-genoypes-with-R)<br>
