@@ -73,7 +73,7 @@ wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel
 
 ---
 
-## 1. SNP and genotype calling with BCFtools
+## 2. SNP and genotype calling with BCFtools
 BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to decompress and index the genome using `samtools faidx`:
 ```bash
 gzip -d genome/Hmel2.fa.gz
