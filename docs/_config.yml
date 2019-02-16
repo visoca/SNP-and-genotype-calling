@@ -10,13 +10,3 @@ docs:
   
 - title: SNP and genotype calling with bcftools
   url: bcftools.md
-
-- title: Deployment
-  url: deployment.html
-sections: [
-    ['setup', 'Initial setup'],
-    ['tut', 'Tutorial'],
-    ['ref', 'Reference'],
-    ['dev', 'Developers'],
-    ['post', 'Posts']
-]
