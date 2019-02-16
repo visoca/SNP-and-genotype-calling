@@ -1,5 +1,6 @@
 ### [Advanced Data Analysis - Introduction to NGS data analysis](https://visoca.github.io/AdvDataAna-introNGS/)
 **_Department of Animal and Plant Sciences, University of Sheffield_**<br>
+---
 # SNP and genotype calling
 **_Victor Soria-Carrasco_**
 
