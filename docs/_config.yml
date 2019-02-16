@@ -1,14 +1,3 @@
 title: [SNP and genotype calling]
 subtitle: [Advanced Data Analysis - Introduction to NGS data analysis]
 
-navigation: 2
-
-docs_list_title: Tasks
-
-docs:
-
-- title: Initial setup
-  url: setup.md
-  
-- title: SNP and genotype calling with bcftools
-  url: bcftools.md
