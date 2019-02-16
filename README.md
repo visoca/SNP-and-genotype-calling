@@ -73,7 +73,7 @@ wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel
 
 ---
 
-## SNP and genotype calling with BCFtools
+## 1. SNP and genotype calling with BCFtools
 BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to decompress and index the genome using `samtools faidx`:
 ```bash
 gzip -d genome/Hmel2.fa.gz
@@ -223,7 +223,7 @@ and the content of the logfiles should look like this:
 >``==============================================================================``<br>
 >``Fri 15 Feb 18:46:50 GMT 2019``<br>
 
-## VCF and BCF format
+## 2. VCF and BCF format
 One of the most popular text-file formats for storing genetic variation information is the [Variant Call Format (VCF)](http://gatkforums.broadinstitute.org/gatk/discussion/1268/what-is-a-vcf-and-how-should-i-interpret-it)). There are different versions of the format, but the core elements are the same. You can find a full description of the latest iteration [here](https://github.com/samtools/hts-specs/blob/master/VCFv4.3.pdf).Due to the large amount of data usually involved, files tend to be stored compressed. BCF is the binary version of VCF, which keeps the same information, but compressed and indexed. It  is designed to be much more efficient to process and store large amounts of data. The practical downside is that the contents can only be accessed with `bcftools view`.
 
 The VCF format is composed of meta-information lines (prefixed wih ##), a header line (prefixed with #), and data lines each containing information about a position in the genome and genotype information on samples for each position (text fields separated by tabs). There are 8 fixed field lines, usually followed by an additional FORMAT field and an arbitrary number of sample fields when genotypes are included.
@@ -255,7 +255,7 @@ bcftools view -h bcftools/Hmel201001.bcf | less -S
 bcftools view -H bcftools/Hmel201001.bcf | less -S
 ```
 
-## SNP and genotype calling with GATK
+## 3. SNP and genotype calling with GATK
 GATK is another popular alternative. The algorithms used are more complex than those of bcftools, which makes the process of SNP calling slower. You can find how ``HaplotypeCaller`` - the caller we will be using in this practical - works [here](https://software.broadinstitute.org/gatk/documentation/article?id=4148). Another advange is its good documentation, with frequently updated guides on *Best Practices*. For example, you can find a document on the [GATK Best Practices for calling variants in RNASeq](https://software.broadinstitute.org/gatk/documentation/article.php?id=3891). However, we are not following all these recommendations here, because of time limitations.  
 
 Before calling SNPs, we have to create the dictionary file for the genome:
@@ -393,7 +393,7 @@ If all goes well, it should take no longer than a few minutes to get the jobs fi
 
 The content of the logfiles can be quite long with many often harmless warnings. In our case, most of the warnings are due to missing data not allowing to calculate some VCF annotations. This can be annoying and result in pretty big files, but this can be avoiding by restricting the logging level to errors only with ``--verbosity ERROR``.
 
-## Operations with BCF files
+## 4. Operations with BCF files
 The next sections exemplify how to do operations with VCF/BCF files, including merging, subsetting and filtering, mostly using bcftools and awk.
 
 ### Samples and SNPs 
@@ -527,15 +527,13 @@ bcftools view -e ' SUM(FMT/DP)<100' -O b filtering/snps.bcf > filtering/snps.DP1
 ```
 ---
 ---
+## 5. Extras
 
 All the following steps are optional extras
 
-## SNP and genotype calling with ANGSD
+### Population structure with NGSADMIX
 
-
-## Population structure with NGSADMIX
-
-## PCA of genoypes with R
+### PCA of genoypes with R
 We are going to carry out PCA using R. For that, we will need to convert our BCF file to mean genotype format (based on the BIMBAM format), where genotypes are encoded as mean genotypes. A mean genotype is a value between 0 and 2 that can be interpreted as the minor allele dosage: 0 is homozygous for the major allele, 1 is a heterozygote, and 2 is a homozygote for the minor allele. Thus, intermediate values reflect the uncertainty in genotypes. 
 
 We are going to use a custom Perl script called ``bcf2bbgeno.pl`` to get such mean genotypes. This scripts (1) removes all the SNPs that have more than two alleles and (2) calculates empirical posterior genotype probabilities from the genotype likelihoods in the BCF file under the assumption that the population is in Hardy-Weinberg equilibrium (HWE). Specifically, the script uses inferred allele frequencies to set HWE priors:
@@ -546,22 +544,33 @@ being p the allele frequency of major/reference allele A. Genotype likelihoods a
 
 You can get some info about how to run the Perl script:
 ```bash
+mkdir scripts
+# download script
+wget https://raw.githubusercontent.com/visoca/popgenomworkshop-gwas_gemma/master/scripts/bcf2bbgeno.pl -O scripts/bcf2bbgeno.pl
+# give execution permissions
+chmod +x scripts/bcf2bbgeno.pl
 # show help
 scripts/bcf2bbgeno.pl -h
 ```
 
-To calculate the genotype posterior probabilites and save them in mean genotype format, we would need to run a command like this one (followed by compression to save some space, given that ```gemma``` can handle gzipped files):
+To calculate the genotype posterior probabilites and save them in mean genotype format, we would need to run a command like this one, including the flag to include a header with the individuals names (followed by compression to save some space, given that ```R``` can handle gzipped files without problems):
 ```bash
-scripts/bcf2bbgeno.pl -i data/fha.vcf.gz -o fha.bbgeno -p H-W -s -r
+scripts/bcf2bbgeno.pl -i snps/snps.flt.bcf -o snps.bbgeno -p H-W -a
 # compress the file to save some space
 gzip fha.bbgeno
 ```
-
+We will also need the information about the race and sex of the samples, which can be copied from a shared directory in ShARC:
+```bash
+cp
+```
+Then we will use R to do PCA with the mean genotypes and do some plotting. First, let's load the genotypes
 ```R
 ## load genotypes
-genofile<-"pca/bcftools.bbgeno"
+genofile<-"pca/snps.bbgeno.gz"
 genotypes<-read.table(genofile,header=T, check.names=F)
-
+```
+Now we will calculate the genotype covariance matrix:
+```R
 ## calculate N x N genotype covariance matrix
 gmn<-apply(genotypes[,-(1:3)],1,mean)
 nids<-ncol(genotypes)-3
@@ -581,14 +590,30 @@ for(i in 1:nids){
   }
  }
 }
-
+```
+And we run a PCA using the function `prcomp`:
+```R
 ## pca on the genotype covariance matrix
 pcg<-prcomp(x=gcovarmat,center=TRUE,scale=FALSE)
+```
+Extract the PCS:
+```R
 pcs<-pcg$x
 rownames(pcs)<-colnames(genotypes[,-(1:3)])
 pcs.col<-unlist(lapply (rownames(pcs), function(x)
 as.character(col.table[col.table[,2]==populations[populations[,1]==as.character(x),][[2]],][[1]])))
+```
+```R
 
+# plot each PC using different colours for race and different symbols for sex
+race.col<-c("","")
+sex.symbol<-c(0,2)
+#Plot PC1 vs PC2
+plot(pcs[,1],pcs[, i+2], main="PC1 vs PC2", xlab="PC1", ylab="PC2"))
+```
+
+We can also plot the names of the samples to investigate potential outliers:
+```R
 # plot each PC with sample names
 for (i in 1:(npcs-1)){
 par(mfrow=c(1,1),oma=c(1,1,1,10), mar=c(5, 4, 4, 2) + 0.1)
@@ -599,15 +624,10 @@ par(mfrow=c(1,1), oma=c(0,0,0,1), mar=c(0,0,0,0), new=T)
 plot(0, 0, type="n", bty="n", xaxt="n", yaxt="n")
 legend("right", legend=pops, lty=1, lwd=10, col=colours, bty="n", xpd=T)
 
-# plot each PC using different colours for race and different symbols for sex
-race.col<-c("","")
-sex.symbol<-c(0,2)
-#Plot PC1 vs PC2
-plot(pcs[,1],pcs[, i+2], main="PC1 vs PC2", xlab="PC1", ylab="PC2"))
-
 ```
-## Differentiation genome scans using pairwise FSTs
+### Differentiation genome scans using pairwise FSTs
 
+### SNP and genotype calling with ANGSD
 
 ### Resources
 * [samtools manual](http://www.htslib.org/doc/samtools.html)
