@@ -73,21 +73,18 @@ wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel
 
 ---
 
-
 ## SNP and genotype calling with BCFtools
-BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to index the genome using samtools. We can keep the genome compressed to save space - which is always a good idea when working with NGS data -, but we have to use bgzip (part of samtools) instead of gzip:
+BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to decompress and index the genome using `samtools faidx`:
 ```bash
 gzip -d genome/Hmel2.fa.gz
-bgzip genome/Hmel2.fa
-samtools faidx genome/Hmel2.fa.gz
+samtools faidx genome/Hmel2.fa
 ```
-This will produce two index files:
+This will produce a .fai index file:
 ```bash
  ls -lh genome
 ```
->``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa.gz``<br>
->``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.gz.fai``<br>
->``-rw-r--r-- 1 myuser cs 66K Feb 13 17:11 Hmel2.fa.gz.gzi``<br>
+>``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa``<br>
+>``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.fai``<br>
 
 We are going to prepare now a batch script to call SNPs and genotypes for all 32 individuals. To speed things up, we will be using an [SGE array job](http://docs.hpc.shef.ac.uk/en/latest/parallel/JobArray.html) to call SNPs for three scaffolds (Hmel201001, Hmel201002, and Hmel201003) in parallel:
 
@@ -110,7 +107,7 @@ I=$(($SGE_TASK_ID-1))
 REGIONS=(Hmel201001 Hmel201002 Hmel201003)
 
 # Path to the genome
-GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa.gz
+GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa
 
 # Path to directory with BAM files
 ALIDIR=/fastdata/$USER/varcal/alignments
@@ -178,7 +175,7 @@ bcftools index $OUTDIR/bcftools-${REGIONS[$I]}.bcf
 echo "=============================================================================="
 date
 ```
-Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimate genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` do identify both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are using a number of non-default options:
+Calling SNPs with bcftools is a two-step process. First, `bcftools mpileup` estimates genotype likelihoods at each genomic position with sequence data. Second, `bcftools call` identifies both variants and genotypes, i.e. makes the actual call. To avoid generating intermediate temporary files, the output of `bcftools mpileup` is *piped* to `bcftools call`. We are using a number of non-default options:
 1. Estimating genotype likelihoods with `bcftools mpileup`:
    * `-q 20`: filter out sites with base quality (BQ) <20
    * `-Q 20`: filter out alignments with mapping quality (MQ) <20
@@ -263,16 +260,15 @@ GATK is another popular alternative. The algorithms used are more complex than t
 
 Before calling SNPs, we have to create the dictionary file for the genome:
 ```bash
-gatk CreateSequenceDictionary -R genome/Hmel2.fa.gz -O genome/Hmel2.dict
+gatk CreateSequenceDictionary -R genome/Hmel2.fa -O genome/Hmel2.dict
 ```
 This will produce a dictionary file:
 ```bash
  ls -lh genome
 ```
->``-rw-r--r-- 1 myuser cs  92K Feb 13 19:50 Hmel2.dict``<br>
->``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa.gz``<br>
->``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.gz.fai``<br>
->``-rw-r--r-- 1 myuser cs 66K Feb 13 17:11 Hmel2.fa.gz.gzi``<br>
+>``-rw-r--r-- 1 myuser cs 92K Feb 13 19:50 Hmel2.dict``<br>
+>``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa``<br>
+>``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.fai``<br>
 
 __Important note:__ GATK is more picky than bcftools with regards to the content of the BAM files and requires to have read groups information appropriately encoded. The BAM files that will be use below have been produced to include such information, but it is something to bear in mind if plannig to use GATK. I have included in this repository two examples scripts on (1) how to run an aligner such as [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) to include read groups in the output BAM files ([hisat2.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/hisat2.sh)) and (2) how to run [picard tools](https://broadinstitute.github.io/picard/) to add read groups to the BAM files *a posteriori* ([rgsbams.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/rgsbams.sh)). 
 
@@ -395,7 +391,11 @@ If all goes well, it should take no longer than a few minutes to get the jobs fi
 >``-rw-r--r-- 1 myuser cs  86K Feb 16 14:24 gatk-Hmel201003.vcf``<br>
 >``-rw-r--r-- 1 myuser cs  18K Feb 16 14:24 gatk-Hmel201003.vcf.idx``<br>
 
+The content of the logfiles can be quite long with many often harmless warnings. In our case, most of the warnings are due to missing data not allowing to calculate some VCF annotations. This can be annoying and result in pretty big files, but this can be avoiding by restricting the logging level to errors only with ``--verbosity ERROR``.
+
 ## Operations with BCF files
+The next sections exemplify how to do operations with VCF/BCF files, including merging, subsetting and filtering, mostly using bcftools and awk.
+
 ### Samples and SNPs 
 A list of the samples contained in the file can be obtained using simple linux commands or `bcftools query`, and can be counted with `wc`:
 ```bash
@@ -436,7 +436,7 @@ SAMPLES=$(bcftools query -l bcftools/bcftools-concat.bcf | head -n 10 | tr '\n/'
 bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-first16.bcf
 bcftools index bcftools/bcftools-concat-first16.bcf
 
-SAMPLES=$(bcftools query -l bcftools/bcftools-concat.bcf | tail -n 10 | tr '\n/' ','| sed 's/,$//')
+SAMPLES=$(bcftools query -lDepthPerSampleHC bcftools/bcftools-concat.bcf | tail -n 10 | tr '\n/' ','| sed 's/,$//')
 bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-last16.bcf
 bcftools index bcftools/bcftools-concat-last16.bcf
 ```
@@ -445,9 +445,58 @@ And then merge them into a single file with `bcftools merge`:
 bcftools merge bcftools/bcftools-concat-first16.bcf bcftools/bcftools-concat-last16.bcf -O b -o bcftools/bcftools-merge.bcf
 bcftools index bcftools/bcftools-merge.bcf
 ```
-### Filtering
 
 ### Comparing and combining outputs
+We are now going to compare the SNPs called by bcftools and GATK. First, let's merge the bcf files for each scaffold:
+``bash
+mkdir comparison
+# merge bcftools calls
+bcftools concat bcftools/*.bcf -O b -o comparison/bcftools.bcf
+bcftools index comparison/bcftools.bcf
+# merge GATK calls
+bcftools concat gatk/*.bcf -O b -o comparison/gatk.bcf
+bcftools index comparison/gatk.bcf
+```
+Let's see the total number of SNPs called by each programme:
+```bash
+bcftools view -H comparison/bcftools.bcf | wc -l
+bcftools view -H comparison/gatk.bcf | wc -l
+```
+As you can see both programmes called a similar number of SNPs. Let's now find out the SNPs that are shared between both calls using ``bcfools isec``:
+```bash
+bcftools isec -O b comparison/bcftools.bcf comparison/gatk.bcf -p comparison/isec
+```
+This will result in the following files:
+```ls -lh comparison/isec```
+
+>``total 1.7M``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.5M Feb 16 16:20 0000.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.6K Feb 16 16:20 0000.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  35K Feb 16 16:20 0001.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  217 Feb 16 16:20 0001.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  70K Feb 16 16:20 0002.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  229 Feb 16 16:20 0002.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  80K Feb 16 16:20 0003.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  226 Feb 16 16:20 0003.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  559 Feb 16 16:20 README.txt``<br>
+
+The content of the BCF files is explained in the README.txt file:
+* ``0000.bcf``: private to bcftools
+* ``0001.bcf``: private to gatk
+* ``0002.bcf``: bcftools records shared with gatk
+* ``0003.bcf``: gatk records shared with gatk
+
+### Filtering
+The steps above got us a quite raw sets of SNPs, but usually we want to apply some filters depending on the sort of downstream analyses that we intend to do. Filtering usually consist on establishin some sort of threshold for the SNP quality in the QUAL field and some of the variables encoded in the INFO field (e.g. depth, mapping quality, etc.), but more sophisticated filterin is possible based on genotype-specific variables (e.g. discarding genotypes below a certain quality or with fewer than a number of reads). Although in principle it is possible to do soft-filtering of SNPs and simply tag them as `PASSED` or `FAILED` in the VCF/BCF file, in practice it is more useful to do hard-filtering and simply remove all those SNPs (and genotypes) that did not meet our thresholds.
+
+#### SNP-based filtering
+Filter by SNP quality
+SNP depth
+mapping quality
+allele frequency
+
+
+#### Genotype-based filtering
 
 
 ---
@@ -459,6 +508,7 @@ All the following steps are optional extras
 
 
 ## Population structure with NGSADMIX
+
 ## PCA of genoypes with R
 ## Differentiation genome scans using pairwise FSTs
 
