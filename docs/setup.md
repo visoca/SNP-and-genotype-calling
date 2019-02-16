@@ -35,12 +35,12 @@ The files should look like this:
 ```bash
 ls -lh alignments
 ```
->``-rw-r--r--   1 myuser bo 1.9G Feb 13 04:29 60A.bam``<br>
->``-rw-r--r--   1 myuser bo 482K Feb 13 04:30 60A.bam.bai``<br>
->``-rw-r--r--   1 myuser bo 1.7G Feb 13 04:29 60I.bam``<br>
->``-rw-r--r--   1 myuser bo 468K Feb 13 04:29 60I.bam.bai``<br>
->``-rw-r--r--   1 myuser bo 2.1G Feb 13 04:31 61A.bam``<br>
->``-rw-r--r--   1 myuser bo 586K Feb 13 04:31 61A.bam.bai``<br>
+>``-rw-r--r--   1 myuser cs 1.9G Feb 13 04:29 60A.bam``<br>
+>``-rw-r--r--   1 myuser cs 482K Feb 13 04:30 60A.bam.bai``<br>
+>``-rw-r--r--   1 myuser cs 1.7G Feb 13 04:29 60I.bam``<br>
+>``-rw-r--r--   1 myuser cs 468K Feb 13 04:29 60I.bam.bai``<br>
+>``-rw-r--r--   1 myuser cs 2.1G Feb 13 04:31 61A.bam``<br>
+>``-rw-r--r--   1 myuser cs 586K Feb 13 04:31 61A.bam.bai``<br>
 
 Lastly, we also need to download the reference genome, you can do it using [wget](https://www.gnu.org/software/wget/manual/wget.html) (remember that you can also read the manual on the command line with `man wget`):
 ```bash
