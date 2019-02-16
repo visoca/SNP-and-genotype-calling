@@ -1,4 +1,4 @@
-# SNP and genotype calling
+---
 **_Victor Soria-Carrasco_**
 **_Department of Animal and Plant Sciences, University of Sheffield_**
 
