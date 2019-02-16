@@ -130,3 +130,5 @@ Another typical situation is to want to exclude all SNPs for which only a small 
 ```bash
 bcftools view -e ' SUM(FMT/DP)<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
 ```
+
+[Back to TOC](index.md)
