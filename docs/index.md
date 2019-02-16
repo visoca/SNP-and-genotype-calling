@@ -1,10 +1,8 @@
-### [Advanced Data Analysis - Introduction to NGS data analysis](https://visoca.github.io/AdvDataAna-introNGS/)
-**_Department of Animal and Plant Sciences, University of Sheffield_**
-
 # SNP and genotype calling
 **_Victor Soria-Carrasco_**
+**_Department of Animal and Plant Sciences, University of Sheffield_**
 
-The aim of this practical is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
+This practical is part of the module [Advanced Data Analysis - Introduction to NGS data analysis](https://visoca.github.io/AdvDataAna-introNGS/). The aim is to learn how to call single nucleotide polymorphism (SNPs) and genotypes, that is the process of identifying variable sites and determining the genotype for each individual at each site. We will be using a dataset of whole genome sequence data of 32 individuals of *Heliconius melpomene*. After calling SNPs, we will do some subsetting and filtering and will carry out a few example analyses.
 
 ## Table of contents
 1. [Initial set up](setup.md)
