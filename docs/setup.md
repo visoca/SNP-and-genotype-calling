@@ -47,4 +47,4 @@ Lastly, we also need to download the reference genome, you can do it using [wget
 mkdir genome
 wget http://download.lepbase.org/v4/sequence/Heliconius_melpomene_melpomene_Hmel2_-_scaffolds.fa.gz -O genome/Hmel2.fa.gz
 ```
-[Back to TOC](index.rm)
+[Back to TOC](index.md)
