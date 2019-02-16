@@ -1,4 +1,12 @@
-title: [Advanced Data Analysis - Introduction to NGS data analysis]
-subtitle: [SNP and genotype calling]
+title: [SNP and genotype calling]
+subtitle: [Advanced Data Analysis - Introduction to NGS data analysis]
 
 navigation: 2
+
+sections: [
+    ['doc', 'Documentation'],
+    ['tut', 'Tutorial'],
+    ['ref', 'Reference'],
+    ['dev', 'Developers'],
+    ['post', 'Posts']
+]
