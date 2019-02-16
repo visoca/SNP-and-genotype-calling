@@ -2,5 +2,6 @@
 #  - jekyll-remote-theme
 #
 #remote_theme: pixeldroid/programming-pages
-
+title: [SNP and genotype calling
+description: [Victor Soria-Carrasco]
 theme: jekyll-theme-cayman
