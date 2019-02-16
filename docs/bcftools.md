@@ -1,6 +1,3 @@
-### [Advanced Data Analysis - Introduction to NGS data analysis](https://visoca.github.io/AdvDataAna-introNGS/)
-**_Department of Animal and Plant Sciences, University of Sheffield_**<br>
-
 ## 2. SNP and genotype calling with BCFtools
 BCFtools is a very popular programme to call SNPs and genotypes (and also to manipulate and filter vcf/bcf files as we will see afterwards). SNP calling is a relatively intensive process, to speed things up we will be restricting variant calling to 3 scaffolds. Before calling SNPs, we have to decompress and index the genome using `samtools faidx`:
 ```bash
