@@ -4,11 +4,9 @@ subtitle: [Advanced Data Analysis - Introduction to NGS data analysis]
 navigation: 2
 
 sections: [
-    ['doc', 'Documentation'],
+    ['setup', 'Initial setup'],
     ['tut', 'Tutorial'],
     ['ref', 'Reference'],
     ['dev', 'Developers'],
     ['post', 'Posts']
 ]
-
-theme: jekyll-theme-midnight
