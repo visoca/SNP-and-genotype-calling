@@ -10,3 +10,5 @@ sections: [
     ['dev', 'Developers'],
     ['post', 'Posts']
 ]
+
+theme: jekyll-theme-midnight
