@@ -3,6 +3,16 @@ subtitle: [Advanced Data Analysis - Introduction to NGS data analysis]
 
 navigation: 2
 
+docs:
+
+- title: Initial setup
+  url: setup.md
+  
+- title: SNP and genotype calling with bcftools
+  url: bcftools.md
+
+- title: Deployment
+  url: deployment.html
 sections: [
     ['setup', 'Initial setup'],
     ['tut', 'Tutorial'],
