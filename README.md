@@ -487,18 +487,44 @@ The content of the BCF files is explained in the README.txt file:
 * ``0003.bcf``: gatk records shared with gatk
 
 ### Filtering
-The steps above got us a quite raw sets of SNPs, but usually we want to apply some filters depending on the sort of downstream analyses that we intend to do. Filtering usually consist on establishin some sort of threshold for the SNP quality in the QUAL field and some of the variables encoded in the INFO field (e.g. depth, mapping quality, etc.), but more sophisticated filterin is possible based on genotype-specific variables (e.g. discarding genotypes below a certain quality or with fewer than a number of reads). Although in principle it is possible to do soft-filtering of SNPs and simply tag them as `PASSED` or `FAILED` in the VCF/BCF file, in practice it is more useful to do hard-filtering and simply remove all those SNPs (and genotypes) that did not meet our thresholds.
+The steps above got us a quite raw sets of SNPs, but usually we want to apply some filters depending on the sort of downstream analyses that we intend to do. Filtering usually consist on establishin some sort of threshold for the SNP quality in the QUAL field and some of the variables encoded in the INFO field (e.g. depth, mapping quality, etc.), but more sophisticated filterin is possible based on genotype-specific variables (e.g. discarding genotypes below a certain quality or with fewer than a number of reads). Although in principle it is possible to do soft-filtering of SNPs and simply tag them as `PASSED` or `FAILED` in the VCF/BCF file, in practice it is more useful to do hard-filtering and simply remove all those SNPs (and genotypes) that did not meet our thresholds. We are going to focus on only the SNPs, so let's extract only the snps from the variants shared by bcftools and gatk:
+
+```bash
+mkdir filtering
+bcftools view -v snps comparison/isec/0002.bcf -O b > filtering/snps.bcf
+bcftools index filtering/snps.bcf
+```
 
 #### SNP-based filtering
-Filter by SNP quality
-SNP depth
-mapping quality
-allele frequency
+bcftools allows applying filter either with ``bcftools view`` or with ``bcftools filter`` and using information encoded in the QUAL or INFO fields. These are some examples:
 
+##### Filter by SNP quality - exclude SNPs with QUAL<20
+```bash
+bcftools view -e 'QUAL<20' -O b filtering/snps.bcf > filtering/snps.QS20.bcf
+```
+
+##### Filter by SNP depth - exclude SNPs with depth <30
+```bash
+bcftools view -e 'INFO/DP<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
+```
+An important note here is to be aware that if the file is further processed so that only part of the individuals are used, the fields in INFO may not be updated and it would be then unreliable to filter out using any information from that field.
+
+##### Filter by mapping quality
+
+##### Filter by allele frequency
+For population genetic analyses it is frequent to remove variants below a certain allele frequency, as these ones are difficult to tell apart from sequencing errors. For example, to exclude all SNPs with a minor allele frequency (MAF) below 5% we would run:
+```bash
+bcftools view -e 'MAF<0.05' -O b filtering/snps.bcf > filtering/snps.MAF005.bcf
+```
+##### Filter by sample coverage
+Another typical situation is to want to exclude all SNPs for which only a small fracion of all the individuals have sequence data
+
+#### Combining multiple filters
 
 #### Genotype-based filtering
-
-
+```bash
+bcftools view -e ' SUM(FMT/DP)<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
+```
 ---
 ---
 
@@ -510,6 +536,76 @@ All the following steps are optional extras
 ## Population structure with NGSADMIX
 
 ## PCA of genoypes with R
+We are going to carry out PCA using R. For that, we will need to convert our BCF file to mean genotype format (based on the BIMBAM format), where genotypes are encoded as mean genotypes. A mean genotype is a value between 0 and 2 that can be interpreted as the minor allele dosage: 0 is homozygous for the major allele, 1 is a heterozygote, and 2 is a homozygote for the minor allele. Thus, intermediate values reflect the uncertainty in genotypes. 
+
+We are going to use a custom Perl script called ``bcf2bbgeno.pl`` to get such mean genotypes. This scripts (1) removes all the SNPs that have more than two alleles and (2) calculates empirical posterior genotype probabilities from the genotype likelihoods in the BCF file under the assumption that the population is in Hardy-Weinberg equilibrium (HWE). Specifically, the script uses inferred allele frequencies to set HWE priors:
+
+p(AA) = p2; p(aa) = (1-p)2; p(Aa) = 2p(1-p)
+
+being p the allele frequency of major/reference allele A. Genotype likelihoods are multiplied by these priors to obtain genotype posterior probabilities that are then encoded as mean genotypes and saved to a .bbgeno file.
+
+You can get some info about how to run the Perl script:
+```bash
+# show help
+scripts/bcf2bbgeno.pl -h
+```
+
+To calculate the genotype posterior probabilites and save them in mean genotype format, we would need to run a command like this one (followed by compression to save some space, given that ```gemma``` can handle gzipped files):
+```bash
+scripts/bcf2bbgeno.pl -i data/fha.vcf.gz -o fha.bbgeno -p H-W -s -r
+# compress the file to save some space
+gzip fha.bbgeno
+```
+
+```R
+## load genotypes
+genofile<-"pca/bcftools.bbgeno"
+genotypes<-read.table(genofile,header=T, check.names=F)
+
+## calculate N x N genotype covariance matrix
+gmn<-apply(genotypes[,-(1:3)],1,mean)
+nids<-ncol(genotypes)-3
+nloci<-nrow(genotypes)
+gmnmat<-matrix(gmn,nrow=nloci,ncol=nids)
+gprime<-genotypes[,-(1:3)]-gmnmat
+
+gcovarmat<-matrix(NA,nrow=nids,ncol=nids)
+for(i in 1:nids){
+ for(j in i:nids){
+  if (i==j){
+    gcovarmat[i,j]<-cov(gprime[,i],gprime[,j])
+  }
+  else{
+    gcovarmat[i,j]<-cov(gprime[,i],gprime[,j])
+    gcovarmat[j,i]<-gcovarmat[i,j]
+  }
+ }
+}
+
+## pca on the genotype covariance matrix
+pcg<-prcomp(x=gcovarmat,center=TRUE,scale=FALSE)
+pcs<-pcg$x
+rownames(pcs)<-colnames(genotypes[,-(1:3)])
+pcs.col<-unlist(lapply (rownames(pcs), function(x)
+as.character(col.table[col.table[,2]==populations[populations[,1]==as.character(x),][[2]],][[1]])))
+
+# plot each PC with sample names
+for (i in 1:(npcs-1)){
+par(mfrow=c(1,1),oma=c(1,1,1,10), mar=c(5, 4, 4, 2) + 0.1)
+plot(pcs[,i],pcs[,i+1],type="n", main="PCA using covariance matrix", xlab=paste("PC",i,sep=""), ylab=paste("PC",(i+1),sep=""))
+text(pcs[,i],pcs[,i+1],labels=rownames(pcs),col=pcs.col,cex=0.5)
+# plot legend to the right
+par(mfrow=c(1,1), oma=c(0,0,0,1), mar=c(0,0,0,0), new=T)
+plot(0, 0, type="n", bty="n", xaxt="n", yaxt="n")
+legend("right", legend=pops, lty=1, lwd=10, col=colours, bty="n", xpd=T)
+
+# plot each PC using different colours for race and different symbols for sex
+race.col<-c("","")
+sex.symbol<-c(0,2)
+#Plot PC1 vs PC2
+plot(pcs[,1],pcs[, i+2], main="PC1 vs PC2", xlab="PC1", ylab="PC2"))
+
+```
 ## Differentiation genome scans using pairwise FSTs
 
 
