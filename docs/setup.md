@@ -23,11 +23,11 @@ We are going to use the directory `/fastdata/$USER/varcal` as the base working d
 mkdir -p /fastdata/$USER/varcal
 cd /fastdata/$USER/varcal
 ```
-Now we need to copy the alignments in BAM format produced in the previous sessions to `/fastdata/$USER/varcal/alignments`. If you don't have such data, there are files are available in ` /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/varcal/bams`, e.g.:
+Now we need to copy the alignments in BAM format. We are not going to use the alignments produced in the previous sessions, because we need lignments with certain specific information on them for run some of the exercises. You can copy them with:
 ```bash
 cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/varcal/alignments ./
 ```
-It is very important that all the BAM files are indexed, which can be done the following way:
+It is very important that all the BAM files are indexed, which can be done with the following commands:
 ```bash
 ls alignments/*.bam | xargs -I {} sh -c 'samtools index {}'
 ```
