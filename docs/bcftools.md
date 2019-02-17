@@ -29,7 +29,7 @@ I=$(($SGE_TASK_ID-1))
 
 # Regions (=scaffolds) that will be analysed
 # There must be as many as tasks are specified above with '#$ -t'
-REGIONS=(Hmel201001 Hmel201004 Hmel201008)
+REGIONS=(Hmel201001 Hmel201003 Hmel201008)
 
 # Path to the genome
 GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa
@@ -121,31 +121,33 @@ qsub bcftools.sh
 If all goes well, it should take no longer than a few minutes to get the jobs finished. You should now have the following files:
 ```ls -lh bcftools```
 
->``total 1.6M``<br>
->``-rw-r--r-- 1 myuser cs  72K Feb 15 18:46 bcftools-Hmel201001.bcf``<br>
->``-rw-r--r-- 1 myuser cs  176 Feb 15 18:46 bcftools-Hmel201001.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  505 Feb 15 18:46 bcftools-Hmel201001.log``<br>
->``-rw-r--r-- 1 myuser cs 1.4M Feb 15 18:50 bcftools-Hmel201002.bcf``<br>
->``-rw-r--r-- 1 myuser cs 1.5K Feb 15 18:50 bcftools-Hmel201002.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  505 Feb 15 18:50 bcftools-Hmel201002.log``<br>
->``-rw-r--r-- 1 myuser cs  26K Feb 15 18:46 bcftools-Hmel201003.bcf``<br>
->``-rw-r--r-- 1 myuser cs  158 Feb 15 18:46 bcftools-Hmel201003.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  505 Feb 15 18:46 bcftools-Hmel201003.log``<br>
+>``total 252K``<br>
+>``-rw-r--r-- 1 myuser cs  95K Feb 17 01:57 bcftools-concat.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  287 Feb 17 01:57 bcftools-concat.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  72K Feb 17 01:54 bcftools-Hmel201001.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  176 Feb 17 01:54 bcftools-Hmel201001.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  505 Feb 17 01:54 bcftools-Hmel201001.log``<br>
+>``-rw-r--r-- 1 myuser cs  26K Feb 17 01:54 bcftools-Hmel201003.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  158 Feb 17 01:54 bcftools-Hmel201003.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  505 Feb 17 01:54 bcftools-Hmel201003.log``<br>
+>``-rw-r--r-- 1 myuser cs  17K Feb 17 01:54 bcftools-Hmel201008.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  170 Feb 17 01:54 bcftools-Hmel201008.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs 9.0K Feb 17 01:55 bcftools-Hmel201008.log``<br>
 
 and the content of the logfiles should look like this:
 
 ```less bcftools/bcftools-Hmel201001.log ```
 
->``sharc-node114.shef.ac.uk``<br>
->``Fri 15 Feb 18:46:38 GMT 2019``<br>
+>``sharc-node010.shef.ac.uk``<br>
+>``Sun 17 Feb 01:54:29 GMT 2019``<br>
 >``==============================================================================``<br>
-><br>
+>````<br>
 >``  Your account is set up to use the Genomics Software Repository``<br>
 >``     More info: http://soria-carrasco.staff.shef.ac.uk/softrepo``<br>
-><br>
+>````<br>
 >``Note: none of --samples-file, --ploidy or --ploidy-file given, assuming all sites are diploid``<br>
 >``[mpileup] 32 samples in 32 input files``<br>
 >``==============================================================================``<br>
->``Fri 15 Feb 18:46:50 GMT 2019``<br>
+>``Sun 17 Feb 01:54:41 GMT 2019``<br>
 
 [Back to TOC](index.md)
