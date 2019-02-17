@@ -141,10 +141,10 @@ and the content of the logfiles should look like this:
 >``sharc-node010.shef.ac.uk``<br>
 >``Sun 17 Feb 01:54:29 GMT 2019``<br>
 >``==============================================================================``<br>
->````<br>
+>
 >``  Your account is set up to use the Genomics Software Repository``<br>
 >``     More info: http://soria-carrasco.staff.shef.ac.uk/softrepo``<br>
->````<br>
+>
 >``Note: none of --samples-file, --ploidy or --ploidy-file given, assuming all sites are diploid``<br>
 >``[mpileup] 32 samples in 32 input files``<br>
 >``==============================================================================``<br>
