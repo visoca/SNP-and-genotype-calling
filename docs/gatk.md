@@ -15,7 +15,7 @@ This will produce a dictionary file:
 
 __Important note:__ GATK is more picky than bcftools with regards to the content of the BAM files and requires to have read groups information appropriately encoded. The BAM files that will be use below have been produced to include such information, but it is something to bear in mind if plannig to use GATK. I have included in this repository two examples scripts on (1) how to run an aligner such as [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) to include read groups in the output BAM files ([hisat2.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/hisat2.sh)) and (2) how to run [picard tools](https://broadinstitute.github.io/picard/) to add read groups to the BAM files *a posteriori* ([rgsbams.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/rgsbams.sh)). 
 
-Now, let's prepare a batch script to run GATK on ShARC. As before, we will use an SGE array to call SNPs in parallel for three scaffolds.
+Now, let's prepare a batch script to run GATK on ShARC. As before, we will use an SGE array to call SNPs in parallel for three scaffolds, using 4 cores for each task.
 
 ```bash
 #!/bin/bash
@@ -23,6 +23,7 @@ Now, let's prepare a batch script to run GATK on ShARC. As before, we will use a
 #$ -l mem=4G
 #$ -j y
 #$ -t 1-3
+#$ -pe smp 4
 #$ -o gatk.log
 #$ -N gatk
 
@@ -30,7 +31,7 @@ I=$(($SGE_TASK_ID-1))
 
 # Regions (=scaffolds) that will be analysed
 # There must be as many as tasks are specified above with '#$ -t'
-REGIONS=(Hmel201001 Hmel201002 Hmel201003)
+REGIONS=(Hmel201001 Hmel201003 Hmel201008)
 
 # Path to the genome
 GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa
@@ -82,6 +83,7 @@ BCF=$OUTDIR/gatk-${REGIONS[$I]}.bcf
 #   * --minimum-mapping-quality 20: filter out alignments with mapping quality <20
 #   * --output-mode EMIT_VARIANTS_ONLY: output only variants
 #   * --dont-use-soft-clipped-bases: avoid using soft-clipped bases for calls
+#   * --native-pair-hmm-threads 4: use 4 threads for the pair-HMM process
 
 gatk --java-options "-Xmx4g" \
 HaplotypeCaller \
@@ -89,6 +91,7 @@ HaplotypeCaller \
 --minimum-mapping-quality 20 \
 --output-mode EMIT_VARIANTS_ONLY \
 --dont-use-soft-clipped-bases \
+--native-pair-hmm-threads 4 \
 -R $GENOME \
 $BAMS \
 -L ${REGIONS[$I]} \
@@ -111,6 +114,7 @@ We are going to use the tool called [``HaplotypeCaller``](https://software.broad
 * `--minimum-mapping-quality 20`: filter out alignments with mapping quality (MQ) <20
 * `--output-mode EMIT_VARIANTS_ONLY`: output only variants
 * `--dont-use-soft-clipped-bases`: avoid using soft-clipped bases to minimize false positive and false negative calls; this is recommended for RNASeq (and it is how bcftools works).
+* --native-pair-hmm-threads 4: use 4 threads to speed up the pair-HMM process
 
 When you have finished editing the bash script, save it as `gatk.sh`, make it executable with `chmod` and submit it to the job queue with `qsub`:
 ```bash
