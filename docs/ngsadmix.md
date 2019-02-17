@@ -8,13 +8,13 @@ mkdir ngsadmix
 angsd -vcf-gl <(bcftools view -O v filtering/snps.bcf) -fai genome/Hmel2.fa.fai -doMaf 3 -nInd 32 -domajorminor 1 -doglf 2 -out ngsadmix/snps
 ```
 
-Now prepare the script to run NGSadmix for K=2 to K=5:
+Now prepare the script to run NGSadmix for K=2 to K=4 in parallel:
 
 ```bash
 #!/bin/bash
 #$ -l h_rt=1:00:00
 #$ -l mem=2G
-#$ -t 1-5
+#$ -t 1-4
 #$ -m bea
 #$ -M myemail@mail.com
 #$ -j y
@@ -41,7 +41,12 @@ qsub ngsadmix.sh
 ```
 After running, you should have the following files: 
 ```bash
-ls -lh gatk
+ls -lh ngsadmix
 ```
 
+Now we are going to visualize the admixture estimates using ´R´.
+
+```R
+ls -lh ngsadmix
+```
 
