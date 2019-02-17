@@ -29,7 +29,7 @@ I=$(($SGE_TASK_ID-1))
 
 # Regions (=scaffolds) that will be analysed
 # There must be as many as tasks are specified above with '#$ -t'
-REGIONS=(Hmel201001 Hmel201002 Hmel201003)
+REGIONS=(Hmel201001 Hmel201004 Hmel201008)
 
 # Path to the genome
 GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa
