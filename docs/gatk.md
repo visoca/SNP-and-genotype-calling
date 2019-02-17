@@ -122,7 +122,9 @@ chmod +x gatk.sh
 qsub gatk.sh
 ```
 If all goes well, it should take no longer than a few minutes to get the jobs finished (although you will notice it takes a bit longer than bcftools). You should now have the following files:
-```ls -lh gatk```
+```bash
+ls -lh gatk
+```
 
 >``total 22M``<br>
 >``-rw-r--r-- 1 myuser cs  92K Feb 16 14:28 gatk-Hmel201001.bcf``<br>
