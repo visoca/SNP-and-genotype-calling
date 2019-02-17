@@ -53,7 +53,7 @@ bcftools index bcftools/bcftools-merge.bcf
 
 ### Comparing and combining outputs
 We are now going to compare the SNPs called by bcftools and GATK. First, let's merge the bcf files for each scaffold:
-``bash
+```bash
 mkdir comparison
 # merge bcftools calls
 bcftools concat bcftools/*.bcf -O b -o comparison/bcftools.bcf
@@ -101,34 +101,60 @@ bcftools index filtering/snps.bcf
 ```
 
 #### SNP-based filtering
-bcftools allows applying filter either with ``bcftools view`` or with ``bcftools filter`` and using information encoded in the QUAL or INFO fields. These are some examples:
+bcftools allows applying filter either with ``bcftools view`` or with ``bcftools filter`` and using information encoded in the QUAL or INFO fields, also allowing expression with multiple conditions and basic arithmetics. These are some examples:
 
-##### Filter by SNP quality - exclude SNPs with QUAL<20
+##### Filter by SNP quality
+An obvious filter is to exclude (-e) SNPs below a quality threshold:
 ```bash
 bcftools view -e 'QUAL<20' -O b filtering/snps.bcf > filtering/snps.QS20.bcf
 ```
-
-##### Filter by SNP depth - exclude SNPs with depth <30
+Filters can also be specified as includes (-i), the equivalent of the one above is:
+```bash
+bcftools view -i 'QUAL>=20' -O b filtering/snps.bcf > filtering/snps.QS20.bcf
+```
+Comparing them show the result is the same:
+```bash
+diff filtering/snps.QS20.bcf filtering/snps.QS20i.bcf
+```
+##### Filter by SNP depth 
+An example to exclude SNPs with depth <30:
 ```bash
 bcftools view -e 'INFO/DP<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
 ```
 An important note here is to be aware that if the file is further processed so that only part of the individuals are used, the fields in INFO may not be updated and it would be then unreliable to filter out using any information from that field.
 
 ##### Filter by mapping quality
-
+Another typical filter is to remove SNPs with low mapping quality (RMS MQ: root mean square of the mapping quality of reads across all samples). For examples, all SNPs with RMS MQ < 20 can be discarded with the following command:
+```bash
+bcftools view -e 'MQ<20' -O b filtering/snps.bcf > filtering/snps.MQ20.bcf
+```
 ##### Filter by allele frequency
-For population genetic analyses it is frequent to remove variants below a certain allele frequency, as these ones are difficult to tell apart from sequencing errors. For example, to exclude all SNPs with a minor allele frequency (MAF) below 5% we would run:
+For population genetic analyses it is frequently advised to remove variants below a certain allele frequency, as these ones are difficult to tell apart from sequencing errors. For example, to exclude all SNPs with a minor allele frequency (MAF) below 5% we would run:
 ```bash
 bcftools view -e 'MAF<0.05' -O b filtering/snps.bcf > filtering/snps.MAF005.bcf
 ```
 ##### Filter by sample coverage
-Another typical situation is to want to exclude all SNPs for which only a small fracion of all the individuals have sequence data
-
-#### Combining multiple filters
+Another typical situation is to want to exclude all SNPs for which only a small fracion of all the individuals have sequence data. That requires using the total number of alleles in the called genotypes (AN). In the case of a diploid species, this can be used to filter SNPs by number of individuals genotyped. For example, we can remove all SNPs genotyped at less than 13 individuals:
+```bash
+bcftools view -e 'AN/2<13' -O b filtering/snps.bcf > filtering/snps.SAMP13.bcf
+```
 
 #### Genotype-based filtering
+Filtering using the genotype fields can allow for some more precise filtering. For example, in cases of high depth heterogeneity across samples, it may be better to filter out by median genotype depth than bytotal depth across all samples. An example removing all SNPs where the mean genotype depth is below 5:
 ```bash
-bcftools view -e ' SUM(FMT/DP)<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
+bcftools view -e 'MEAN(FMT/DP)<5' -O b filtering/snps.bcf > filtering/snps.MEANGTDP5.bcf
 ```
+Sometimes it is reasonable to ignore genotype calls based on few reads. The following command remove all genotype calls (i.e. genotypes are substited by dots) based on less than 3 reads:
+```bash
+bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGT3.bcf
+```
+#### Combining multiple filters 
+Multiple filters can be combined in a single command using or piping several ones. For example, we can combine a few of the filters we have used above:
+```bash
+bcftools filter -S . -e 'FMT/DP<3' filtering/snps.bcf | \
+bcftools view -e 'MEAN(FMT/DP)<5 || MAF<0.05' || MQ<20 || AN/2<13' -O b > filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf
+```
+
+It is important to be careful with the order of the filters, as different combinations can result in different end results.
 
 [Back to TOC](index.md)
