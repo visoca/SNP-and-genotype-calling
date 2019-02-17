@@ -16,10 +16,10 @@ bcftools view -H bcftools/bcftools-Hmel201001.bcf | wc -l
 # only SNPs
 bcftools view -H -v snps bcftools/bcftools-Hmel201001.bcf | wc -l
 # only indels
-bcftools view -H -v indel bcftools/bcftools-Hmel201001.bcf | wc -l
+bcftools view -H -v indels bcftools/bcftools-Hmel201001.bcf | wc -l
 ```
 Multiallelic SNPs (with >2 alternate alleles) can be extracted with awk or with the `-m` flag:
-```bash
+```bash 
 bcftools view -H -v snps bcftools/bcftools-Hmel201001.bcf | awk '$5 ~ /,/' | less -S
 bcftools view -H -v snps -m 3 bcftools/bcftools-Hmel201001.bcf | less -S
 ```
@@ -31,9 +31,9 @@ bcftools concat bcftools/*.bcf -O b -o bcftools/bcftools-concat.bcf
 bcftools index bcftools/bcftools-concat.bcf
 bcftools view -H bcftools/bcftools-concat.bcf | less -S
 ```
-Likewise, we can subset SNPs within particular regions, for example to extract the variants within the region 5000-5500bp in scaffold Hmel201001 and 15000-20000 in Hmel201002:
+Likewise, we can subset SNPs within particular regions, for example to extract the variants within the region 5000-5500bp in scaffold Hmel201001 and 15000-20000 in Hmel201003:
 ```bash
-bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201002:15000-20000 | less -S 
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201003:15000-20000 | less -S 
 ```
 Subsetting a number of samples is also possible, for example to get only the first 10 samples and the last 10 samples:
 ```bash
@@ -56,10 +56,10 @@ We are now going to compare the SNPs called by bcftools and GATK. First, let's m
 ```bash
 mkdir comparison
 # merge bcftools calls
-bcftools concat bcftools/*.bcf -O b -o comparison/bcftools.bcf
+bcftools concat bcftools/bcftools-Hmel*.bcf -O b -o comparison/bcftools.bcf
 bcftools index comparison/bcftools.bcf
 # merge GATK calls
-bcftools concat gatk/*.bcf -O b -o comparison/gatk.bcf
+bcftools concat gatk/gatk-Hmel*.bcf -O b -o comparison/gatk.bcf
 bcftools index comparison/gatk.bcf
 ```
 Let's see the total number of SNPs called by each programme:
@@ -74,16 +74,18 @@ bcftools isec -O b comparison/bcftools.bcf comparison/gatk.bcf -p comparison/ise
 This will result in the following files:
 ```ls -lh comparison/isec```
 
->``total 1.7M``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.5M Feb 16 16:20 0000.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.6K Feb 16 16:20 0000.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo  35K Feb 16 16:20 0001.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo  217 Feb 16 16:20 0001.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo  70K Feb 16 16:20 0002.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo  229 Feb 16 16:20 0002.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo  80K Feb 16 16:20 0003.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo  226 Feb 16 16:20 0003.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo  559 Feb 16 16:20 README.txt``<br>
+>``total 265K``<br>
+>``drwxr-xr-x 2 myuser cs 4.0K Feb 17 02:06 .``<br>
+>``drwxr-xr-x 3 myuser cs 4.0K Feb 17 02:06 ..``<br>
+>``-rw-r--r-- 1 myuser cs  31K Feb 17 02:06 0000.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  268 Feb 17 02:06 0000.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  41K Feb 17 02:06 0001.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  254 Feb 17 02:06 0001.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  76K Feb 17 02:06 0002.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  279 Feb 17 02:06 0002.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  85K Feb 17 02:06 0003.bcf``<br>
+>``-rw-r--r-- 1 myuser cs  272 Feb 17 02:06 0003.bcf.csi``<br>
+>``-rw-r--r-- 1 myuser cs  559 Feb 17 02:06 README.txt``<br>
 
 The content of the BCF files is explained in the README.txt file:
 * ``0000.bcf``: private to bcftools
@@ -101,7 +103,7 @@ bcftools index filtering/snps.bcf
 ```
 
 #### SNP-based filtering
-bcftools allows applying filter either with ``bcftools view`` or with ``bcftools filter`` and using information encoded in the QUAL or INFO fields, also allowing expression with multiple conditions and basic arithmetics. These are some examples:
+bcftools allows applying filter either with ``bcftools view`` or with ``bcftools filter`` and using information encoded in the QUAL or INFO fields, also allowing expression with multiple conditions and basic arithmetics (more details [here](https://samtools.github.io/bcftools/bcftools.html#expressions)). These are some examples:
 
 ##### Filter by SNP quality
 An obvious filter is to exclude (-e) SNPs below a quality threshold:
@@ -110,11 +112,11 @@ bcftools view -e 'QUAL<20' -O b filtering/snps.bcf > filtering/snps.QS20.bcf
 ```
 Filters can also be specified as includes (-i), the equivalent of the one above is:
 ```bash
-bcftools view -i 'QUAL>=20' -O b filtering/snps.bcf > filtering/snps.QS20.bcf
+bcftools view -i 'QUAL>=20' -O b filtering/snps.bcf > filtering/snps.QS20i.bcf
 ```
-Comparing them show the result is the same:
+Comparing the contents show they are identical:
 ```bash
-diff filtering/snps.QS20.bcf filtering/snps.QS20i.bcf
+diff -s <(bcftools view -H filtering/snps.QS20.bcf) <(bcftools view -H filtering/snps.QS20i.bcf)
 ```
 ##### Filter by SNP depth 
 An example to exclude SNPs with depth <30:
@@ -142,7 +144,7 @@ bcftools view -e 'AN/2<13' -O b filtering/snps.bcf > filtering/snps.SAMP13.bcf
 #### Genotype-based filtering
 Filtering using the genotype fields can allow for some more precise filtering. For example, in cases of high depth heterogeneity across samples, it may be better to filter out by median genotype depth than bytotal depth across all samples. An example removing all SNPs where the mean genotype depth is below 5:
 ```bash
-bcftools view -e 'MEAN(FMT/DP)<5' -O b filtering/snps.bcf > filtering/snps.MEANGTDP5.bcf
+bcftools view -e 'AVG(FMT/DP)<5' -O b filtering/snps.bcf > filtering/snps.MEANGTDP5.bcf
 ```
 Sometimes it is reasonable to ignore genotype calls based on few reads. The following command remove all genotype calls (i.e. genotypes are substited by dots) based on less than 3 reads:
 ```bash
@@ -152,7 +154,7 @@ bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGT
 Multiple filters can be combined in a single command using or piping several ones. For example, we can combine a few of the filters we have used above:
 ```bash
 bcftools filter -S . -e 'FMT/DP<3' filtering/snps.bcf | \
-bcftools view -e 'MEAN(FMT/DP)<5 || MAF<0.05' || MQ<20 || AN/2<13' -O b > filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf
+bcftools view -e 'AVG(FMT/DP)<5 || MAF<0.05 || MQ<20 || AN/2<13' -O b > filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf
 ```
 
 It is important to be careful with the order of the filters, as different combinations can result in different end results.
