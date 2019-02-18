@@ -1,6 +1,6 @@
 ## Population structure with NGSadmix
 
-[NGSadmix](http://www.popgen.dk/software/index.php/NgsAdmix) is a method for inferring admixture from genotype likelihoods, thus taking into account the uncertainty inherent to NGS data. NGSadmix is part of the package ANGSD, it uses genotype likelihood information rather than absolute genotype calls. 
+[NGSadmix](http://www.popgen.dk/software/index.php/NgsAdmix) is a programme (part of the package [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD)) for inferring admixture from genotype likelihoods, thus taking into account the uncertainty inherent to NGS data. It is similar to the famous programme [STRUCTURE](https://web.stanford.edu/group/pritchardlab/structure.html), but better suited for low-coverage NGS data. For those not familiar with this kind of approaches, these programmes allow investigating population structure by inferring individual admixture proportions given a number of populations. This allows also assigning individuals to populations and identifying migrants or admixed individuals.
 
 We first need to conver the bcf file to beagle format with angsd:
 ```bash
