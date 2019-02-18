@@ -73,7 +73,8 @@ admix<-t(as.matrix(read.table("ngsadmix/snps_K2.qopt")))
 
 # Load info about samples
 id.info<-read.table("ngsadmix/sample_race_sex.tsv", sep="\t", header=T)
-# add category combining race and sex
+
+# Add category combining race and sex
 id.info['race.sex']<-paste(id.info$race,id.info$sex,sep="-")
 
 # Palette for plotting
@@ -82,6 +83,7 @@ mypal<-c("#E41A1C","#377EB8","#4DAF4A","#984EA3")
 # sort by race and plot
 admix<-admix[,order(id.info$race)]
 id.info<-id.info[order(id.info$race),]
+
 pdf(file="ngsadmix/snps_K2_byrace.pdf")
 h<-barplot(admix,col=mypal,space=0,border=NA,xlab="Individuals",ylab="admixture")
 text(tapply(1:nrow(id.info),id.info$race,mean),-0.05,unique(id.info$race),xpd=T)
@@ -90,6 +92,7 @@ dev.off()
 # sort by sex
 admix<-admix[,order(id.info$sex)]
 id.info<-id.info[order(id.info$sex),]
+
 pdf(file="ngsadmix/snps_K2_bysex.pdf")
 h<-barplot(admix,col=mypal,space=0,border=NA,xlab="Individuals",ylab="admixture")
 text(tapply(1:nrow(id.info),id.info$sex,mean),-0.05,unique(id.info$sex),xpd=T)
@@ -98,20 +101,27 @@ dev.off()
 # sort by race and sex
 admix<-admix[,order(id.info$race.sex)]
 id.info<-id.info[order(id.info$race.sex),]
+
 pdf(file="ngsadmix/snps_K2_byracebysex.pdf")
 h<-barplot(admix,col=mypal,space=0,border=NA,xlab="Individuals",ylab="admixture")
 text(tapply(1:nrow(id.info),id.info$race.sex,mean),-0.05,unique(id.info$race.sex),xpd=T)
 dev.off()
 ```
 
-This generates 3 pdf files that can be downloaded for visualization. Further analysis with K=3:
+This generates 3 pdf files that can be downloaded for visualization. For example, for race, it should look like this:
+
+![snps_K2_byrace](snps_K2_byrace.png)
+
+Further analysis with K=3:
 
 ```R
 # Load admixture proportions
 admix<-t(as.matrix(read.table("ngsadmix/snps_K3.qopt")))
+
 # sort by race and plot
 admix<-admix[,order(id.info$race)]
 id.info<-id.info[order(id.info$race),]
+
 pdf(file="ngsadmix/snps_K3_byrace.pdf")
 h<-barplot(admix,col=mypal,space=0,border=NA,xlab="Individuals",ylab="admixture")
 text(tapply(1:nrow(id.info),id.info$race,mean),-0.05,unique(id.info$race),xpd=T)
@@ -120,6 +130,7 @@ dev.off()
 # sort by sex
 admix<-admix[,order(id.info$sex)]
 id.info<-id.info[order(id.info$sex),]
+
 pdf(file="ngsadmix/snps_K3_bysex.pdf")
 h<-barplot(admix,col=mypal,space=0,border=NA,xlab="Individuals",ylab="admixture")
 text(tapply(1:nrow(id.info),id.info$sex,mean),-0.05,unique(id.info$sex),xpd=T)
@@ -128,6 +139,7 @@ dev.off()
 # sort by race and sex
 admix<-admix[,order(id.info$race.sex)]
 id.info<-id.info[order(id.info$race.sex),]
+
 pdf(file="ngsadmix/snps_K3_byracebysex.pdf")
 h<-barplot(admix,col=mypal,space=0,border=NA,xlab="Individuals",ylab="admixture")
 text(tapply(1:nrow(id.info),id.info$race.sex,mean),-0.05,unique(id.info$race.sex),xpd=T)
