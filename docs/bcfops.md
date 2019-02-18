@@ -119,7 +119,7 @@ Comparing the contents show they are identical:
 diff -s <(bcftools view -H filtering/snps.QS20.bcf) <(bcftools view -H filtering/snps.QS20i.bcf)
 ```
 ##### Filter by SNP depth 
-An example to exclude SNPs with depth <30:
+An example to exclude SNPs with depth <100:
 ```bash
 bcftools view -e 'INFO/DP<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
 ```
