@@ -4,7 +4,7 @@ We are going to carry out PCA using R. For that, we will need to convert our BCF
 
 We are going to use a custom Perl script called ``bcf2bbgeno.pl`` to get such mean genotypes from posterior genotype probabilites. This scripts (1) removes all the SNPs that have more than two alleles and (2) calculates empirical posterior genotype probabilities from the genotype likelihoods in the BCF file under the assumption that the population is in Hardy-Weinberg equilibrium (HWE). Specifically, the script uses inferred allele frequencies to set HWE priors:
 
-p(AA) = p&#U+00B2; ; p(aa) = (1-p)2; p(Aa) = 2p(1-p)
+p(AA) = p²; ; p(aa) = (1-p)²; p(Aa) = 2p(1-p)
 
 being p the allele frequency of major/reference allele A. Genotype likelihoods are multiplied by these priors to obtain genotype posterior probabilities that are then encoded as mean genotypes (i.e. single value from 0 to 2) and saved to a file with extension .bbgeno.
 
