@@ -1,6 +1,6 @@
 ## SNP and genotype calling with ANGSD
 
-ANGSD is a suite of programmes for the analysis of NGS data. Amongst its multiples capabilities it can call SNP and genotypes using a varied range of approaches. The common theme of the programme is the use of a probabilistic framework that allows accounting for NGS-data uncertainties, especially with low-to-medium depth datasets.  
+ANGSD is a suite of programmes for the analysis of NGS data. Among other things, it can be used to call SNP and genotypes using a varied range of approaches (e.g. it incorporates several SNP calling algorithms). The common theme of the programme is the use of a probabilistic framework that allows accounting for NGS-data uncertainties, especially with low-to-medium depth datasets.  
 
 Here you can see a script to call SNPs in a similar fashion to bcftools or GATK, calling SNPs from three scaffolds in parallel, using 2 cores for each task:
 
