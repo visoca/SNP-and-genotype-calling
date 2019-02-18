@@ -65,8 +65,33 @@ Now we are going to visualize the admixture estimates using ´R´. We will need 
 cp /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/SNPgenocall/sample_race_sex.tsv ngsadmix/ 
 head sample_race_sex.tsv
 ```
-Now, let's launch an interactive session of ``R`` and generate some plots for the admixture inferences when K=2:
+Now, let's launch an interactive session of ``R`` and generate some plots for the admixture inferences when K=2. When you launch R:
+```bash
+R
+```
+you should see something like this:
 
+>``R version 3.4.3 (2017-11-30) -- "Kite-Eating Tree"``<br>
+>``Copyright (C) 2017 The R Foundation for Statistical Computing``<br>
+>``Platform: x86_64-pc-linux-gnu (64-bit)``<br>
+><br>
+>``R is free software and comes with ABSOLUTELY NO WARRANTY.``<br>
+>``You are welcome to redistribute it under certain conditions.``<br>
+>``Type 'license()' or 'licence()' for distribution details.``<br>
+><br>
+>``  Natural language support but running in an English locale``<br>
+><br>
+>``R is a collaborative project with many contributors.``<br>
+>``Type 'contributors()' for more information and``<br>
+>``'citation()' on how to cite R or R packages in publications.``<br>
+><br>
+>``Type 'demo()' for some demos, 'help()' for on-line help, or``<br>
+>``'help.start()' for an HTML browser interface to help.``<br>
+>``Type 'q()' to quit R.``<br>
+><br>
+>``> ``<br>
+
+Now let's load the admixture proportions, the information about the individuals, and let's do some plotting:
 ```R
 # Load admixture proportions
 admix<-t(as.matrix(read.table("ngsadmix/snps_K2.qopt")))
