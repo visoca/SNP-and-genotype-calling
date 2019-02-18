@@ -2,11 +2,11 @@
 
 We are going to carry out PCA using R. For that, we will need to convert our BCF file to mean genotype format (based on the BIMBAM format), where genotypes are encoded as mean genotypes. A mean genotype is a value between 0 and 2 that can be interpreted as the minor allele dosage: 0 is homozygous for the major allele, 1 is a heterozygote, and 2 is a homozygote for the minor allele. Thus, intermediate values reflect the uncertainty in genotypes. 
 
-We are going to use a custom Perl script called ``bcf2bbgeno.pl`` to get such mean genotypes. This scripts (1) removes all the SNPs that have more than two alleles and (2) calculates empirical posterior genotype probabilities from the genotype likelihoods in the BCF file under the assumption that the population is in Hardy-Weinberg equilibrium (HWE). Specifically, the script uses inferred allele frequencies to set HWE priors:
+We are going to use a custom Perl script called ``bcf2bbgeno.pl`` to get such mean genotypes from posterior genotype probabilites. This scripts (1) removes all the SNPs that have more than two alleles and (2) calculates empirical posterior genotype probabilities from the genotype likelihoods in the BCF file under the assumption that the population is in Hardy-Weinberg equilibrium (HWE). Specifically, the script uses inferred allele frequencies to set HWE priors:
 
-p(AA) = p2; p(aa) = (1-p)2; p(Aa) = 2p(1-p)
+p(AA) = p&#U+00B2; ; p(aa) = (1-p)2; p(Aa) = 2p(1-p)
 
-being p the allele frequency of major/reference allele A. Genotype likelihoods are multiplied by these priors to obtain genotype posterior probabilities that are then encoded as mean genotypes and saved to a .bbgeno file.
+being p the allele frequency of major/reference allele A. Genotype likelihoods are multiplied by these priors to obtain genotype posterior probabilities that are then encoded as mean genotypes (i.e. single value from 0 to 2) and saved to a file with extension .bbgeno.
 
 You can get some info about how to run the Perl script:
 ```bash
