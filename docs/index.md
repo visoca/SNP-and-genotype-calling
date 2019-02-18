@@ -12,10 +12,9 @@ This practical is part of the module [Advanced Data Analysis - Introduction to N
 5. [Operations with BCF files](bcfops.md)
 
 Extras:<br>
-  * [SNP and genotype calling with ANGSD](angsd.md)<br>
   * [Population structure with NGSADMIX](ngsadmix.md)<br>
   * [PCA of genoypes with R](pca.md)<br>
-  * [Differentiation genome scans using pairwise FSTs](fst.md)<br>
+  * [SNP and genotype calling with ANGSD](angsd.md)<br>
 
 ---
 
