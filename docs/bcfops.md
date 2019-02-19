@@ -186,7 +186,7 @@ If you check the number of SNPs, you can see this filter doesn't remove any:
 bcftools view -H filtering/snps.bcf | wc -l
 bcftools view -H filtering/snps.MQ20.bcf | wc -l
 ```
-This is because all SNPS have a MQ=60:
+This is because all SNPs have a MQ=60:
 ```bash
 bcftools query -f '%MQ\n' filtering/snps.bcf | less -S
 ```
@@ -214,9 +214,11 @@ bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGT
 Multiple filters can be combined in a single command using or piping several ones. For example, we can combine a few of the filters we have used above:
 ```bash
 bcftools filter -S . -e 'FMT/DP<3' filtering/snps.bcf | \
-bcftools view -e 'AVG(FMT/DP)<5 || MAF<0.05 || MQ<20 || AN/2<13' -O b > filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf
+bcftools view -e 'AVG(FMT/DP)<5 || MAF<0.05 || QUAL<30 || AN/2<13' -O b > filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf
+# This results in quite a dramatic reduction in the number of SNPs:
+bcftools view -H filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf | wc -l
 ```
 
-It is important to be careful with the order of the filters, as different combinations can result in different end results.
+It is important to be careful with the order of the filters, as different combinations can result in different end results, especially if we subsample the individuals at some point.
 
 [Back to TOC](index.md)
