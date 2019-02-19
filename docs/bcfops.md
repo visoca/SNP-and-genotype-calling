@@ -73,7 +73,12 @@ bcftools view -H bcftools/bcftools-concat.bcf | wc -l
 # And you can see other scaffolds as you scroll down
 bcftools view -H bcftools/bcftools-concat.bcf | less -S
 ```
-Likewise, we can subset SNPs within particular regions, for example to extract the variants within the region 5000-5500bp in scaffold Hmel201001 and 15000-20000 in Hmel201003:
+Likewise, we can subset SNPs within particular regions, for example, we can extract all the SNPs on a particular chromosome/scaffold:
+```bash
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201008 | wc -l
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201008 | less -S 
+```
+Or extract the variants within the region 5000-5500bp in scaffold Hmel201001 and 15000-20000 in Hmel201003:
 ```bash
 bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201003:15000-20000 | wc -l
 bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201003:15000-20000 | less -S 
@@ -206,19 +211,29 @@ Filtering using the genotype fields can allow for some more precise filtering. F
 ```bash
 bcftools view -e 'AVG(FMT/DP)<5' -O b filtering/snps.bcf > filtering/snps.MEANGTDP5.bcf
 ```
-Sometimes it is reasonable to ignore genotype calls based on few reads. The following command remove all genotype calls (i.e. genotypes are substited by dots) based on less than 3 reads:
+Sometimes it is reasonable to ignore genotype calls based on few reads. The following command remove all genotype calls (i.e. genotypes are substited by `./.`) based on less than 3 reads:
 ```bash
-bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGT3.bcf
+bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGTDP3.bcf
 ```
+To see the effect of this, we can calculate the number and fraction of individuals genotyped for each SNP:
+```bash
+bcftools query -f "%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n" filtering/snps.bcf | \
+awk '{SUM=0; N=0; for(i=5; i<=NF; i++){if ($i!="./.") SUM+=1}; AVG=SUM/NF; print $1,$2,$3,$4,SUM,AVG}' | less -S
+
+bcftools query -f "%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n" filtering/snps.NOGTDP3.bcf | \
+awk '{SUM=0; N=0; for(i=5; i<=NF; i++){if ($i!="./.") SUM+=1}; AVG=SUM/NF; print $1,$2,$3,$4,SUM,AVG}' | less -S
+
+```
+
 #### Combining multiple filters 
 Multiple filters can be combined in a single command using or piping several ones. For example, we can combine a few of the filters we have used above:
 ```bash
 bcftools filter -S . -e 'FMT/DP<3' filtering/snps.bcf | \
-bcftools view -e 'AVG(FMT/DP)<5 || MAF<0.05 || QUAL<30 || AN/2<13' -O b > filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf
+bcftools view -e 'AVG(FMT/DP)<5 || MAF<0.05 || QUAL<30 || AN/2<13' -O b > filtering/snps.NOGTDP3.MEANGTDP5.MAF005.Q30.SAMP13.bcf
 # This results in quite a dramatic reduction in the number of SNPs:
-bcftools view -H filtering/snps.NOGT3.MEANGTDP5.MAF005.MQ20.SAMP13.bcf | wc -l
+bcftools view -H filtering/snps.NOGTDP3.MEANGTDP5.MAF005.Q30.SAMP13.bcf | wc -l
 ```
 
-It is important to be careful with the order of the filters, as different combinations can result in different end results, especially if we subsample the individuals at some point.
+It is important to be careful with the order of the filters, as different combinations can result in different end results, especially if we subsample the individuals at some point. Also, some positions may end up being invariant or only variant with respect to the reference (i.e. private), or not having any individuals genotyped (you could have spotted some examples above...).
 
 [Back to TOC](index.md)
