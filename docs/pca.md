@@ -75,13 +75,55 @@ then we can have a look at the proportion of variance explained by each PC:
 ```R
 summary(pca.genotypes)
 ```
-As you can see, ~80% of the variance is explained by the first 4 PCs. We will extract the PCs vectors and plot them by pairs (i.e. PC1xPC2, PC2xPC3, PC3xPC4):
+As you can see, ~50% of the variance is explained by the first 4 PCs. We will extract the PCs vectors and plot them by pairs (i.e. PC1xPC2, PC2xPC3, PC3xPC4):
 ```R
 pcs<-pca.genotypes$x
 pdf(file="genotype_matrix-pc1-pc4.pdf")
 plot(pcs[1,], pcs[2,], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
 plot(pcs[2,], pcs[3,], main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
 plot(pcs[3,], pcs[4,], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
+dev.off()
+```
+
+We can't see much like this, let's use the information about the samples (race and sex) and use that to assign colours to races and symbols to sexes:
+```R
+# Load info about samples
+id.info<-read.table("sample_race_sex.tsv", sep="\t", header=T)
+
+# sort as in the pcs
+id.info<-id.info[match(rownames(pcs), id.info$sample),]
+
+# colours
+id.colours<-as.character(id.info$race)
+id.colours[id.colours=="R"]<-"#E41A1C" # R as red
+id.colours[id.colours=="C"]<-"#377EB8" # C as blue
+mycol<-c("#E41A1C","#377EB8","#4DAF4A","#984EA3")
+
+# symbols
+id.symbols<-as.character(id.info$sex)
+id.symbols[id.symbols=="F"]<-1 # females as circles
+id.symbols[id.symbols=="M"]<-2 # males as triangles
+id.symbols<-as.numeric(id.symbols)
+
+# Get PCs
+pcs<-pca.genotypes$x
+
+pdf(file="genotype_matrix-pc1-pc4-colsym.pdf")
+plot(pcs[1,], pcs[2,], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2", pch=id.symbols, col=id.colours)
+plot(pcs[2,], pcs[3,], main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3", pch=id.symbols, col=id.colours)
+plot(pcs[3,], pcs[4,], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4", pch=id.symbols, col=id.colours)
+dev.off()
+```
+
+Some genotypes seem a bit far from the rest, we may be interested in investigating that further. For that, we can plot the id of the samples;
+```R
+pdf(file="genotype_matrix-pc1-pc4-labels.pdf")
+plot(pcs[1,], pcs[2,], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
+text(pcs[1,], pcs[2,],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[2,], pcs[3,], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[2,], pcs[3,],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[3,], pcs[4,],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
 
@@ -106,4 +148,23 @@ for(i in 1:nids){
   }
  }
 }
+
+pca.covar<-prcomp(gcovarmat, center=TRUE, scale=FALSE)
+
+summary(pca.covar)
+```
+You can see now that the first 4 PCs explain >80% of the variance. Let's plot the results:
+```R
+# Get PCs
+pcs<-pca.covar$x
+rownames(pcs)<-colnames(genotypes[,-(1:3)])
+
+pdf(file="genotype_covmatrix-pc1-pc4-labels.pdf")
+plot(pcs[1,], pcs[2,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC1", ylab = "PC2")
+text(pcs[1,], pcs[2,],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[2,], pcs[3,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[2,], pcs[3,],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[3,], pcs[4,],labels=rownames(pcs),col=id.colours,cex=0.5)
+dev.off()
 ```
