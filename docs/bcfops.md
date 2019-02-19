@@ -24,31 +24,74 @@ bcftools view -H -v snps bcftools/bcftools-Hmel201001.bcf | awk '$5 ~ /,/' | les
 bcftools view -H -v snps -m 3 bcftools/bcftools-Hmel201001.bcf | less -S
 ```
 
+### Extracting information
+Partial information can be extracted using the `bcftools query`. In the example above we saw how to get the list of samples using the `l` option, but it can also be used to extract any fields using the `-f` option. For example, you can simple extract the list of positions with:
+```bash 
+bcftools query -f '%POS\n'  bcftools/bcftools-Hmel201001.bcf | less -S
+```
+Or combine multiple fields in the output, for example, scaffold/chromosome, position, reference and alternate alleles:
+```bash 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\n'  bcftools/bcftools-Hmel201001.bcf | less -S
+```
+You can also extract genotypes (notice the position of the tab to avoid adding an extra tab at the end of the lines):
+```bash 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n'  bcftools/bcftools-Hmel201001.bcf | less -S
+```
+Or genotype depths:
+```bash 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t[%DP\t]\n'  bcftools/bcftools-Hmel201001.bcf | less -S
+```
+Or allele depths:
+```bash 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t[%AD\t]\n'  bcftools/bcftools-Hmel201001.bcf | less -S
+```
+Or genotype likelihoods:
+```bash 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%PL]\n'  bcftools/bcftools-Hmel201001.bcf | less -S
+```
+You can even combine this with awk, Perl or other tools to do simple calculations. For example, you can calculate allele frequencies from the AC and AN counts:
+```bash 
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%AC\t%AN\n' bcftools/bcftools-Hmel201001.bcf | less -S
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT\t%AC\t%AN\n' bcftools/bcftools-Hmel201001.bcf| awk '{print $1,$2,$3,$4,$5,$6,$5/$6}' | less -S
+```
+Or the mean genotype quality:
+```bash 
+# For all genotypes (uncalled ones = 0)
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GQ]\n' bcftools/bcftools-Hmel201001.bcf | \
+awk '{SUM=0; for(i=5; i<=NF; i++){SUM+=$i}; AVG=SUM/NF; print $1,$2,$3,$4,AVG}' | less -S
+# Only for called genotypes:
+bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GQ]\n' bcftools/bcftools-Hmel201001.bcf | \
+awk '{SUM=0; N=0; for(i=5; i<=NF; i++){SUM+=$i; if ($i>0) N+=1}; AVG=SUM/N; print $1,$2,$3,$4,AVG}' | less -S
+```
 ### Merging and subsetting files
 Non-overlapping files with the same samples can be easily merged with `bcftools concat`. Let's merge the bcf files for our three scaffolds, index it and have a look:
 ```bash
 bcftools concat bcftools/*.bcf -O b -o bcftools/bcftools-concat.bcf
 bcftools index bcftools/bcftools-concat.bcf
+# Now we have more SNPs
+bcftools view -H bcftools/bcftools-concat.bcf | wc -l
+# And you can see other scaffolds as you scroll down
 bcftools view -H bcftools/bcftools-concat.bcf | less -S
 ```
 Likewise, we can subset SNPs within particular regions, for example to extract the variants within the region 5000-5500bp in scaffold Hmel201001 and 15000-20000 in Hmel201003:
 ```bash
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201003:15000-20000 | wc -l
 bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201003:15000-20000 | less -S 
 ```
 Subsetting a number of samples is also possible, for example to get only the first 10 samples and the last 10 samples:
 ```bash
 SAMPLES=$(bcftools query -l bcftools/bcftools-concat.bcf | head -n 10 | tr '\n/' ','| sed 's/,$//')
-bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-first16.bcf
-bcftools index bcftools/bcftools-concat-first16.bcf
+bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-first10.bcf
+bcftools index bcftools/bcftools-concat-first10.bcf
 
-SAMPLES=$(bcftools query -lDepthPerSampleHC bcftools/bcftools-concat.bcf | tail -n 10 | tr '\n/' ','| sed 's/,$//')
-bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-last16.bcf
-bcftools index bcftools/bcftools-concat-last16.bcf
+SAMPLES=$(bcftools query -l bcftools/bcftools-concat.bcf | tail -n 10 | tr '\n/' ','| sed 's/,$//')
+bcftools view -s $SAMPLES bcftools/bcftools-concat.bcf -O b -o bcftools/bcftools-concat-last10.bcf
+bcftools index bcftools/bcftools-concat-last10.bcf
 ```
 And then merge them into a single file with `bcftools merge`:
 ```bash
-bcftools merge bcftools/bcftools-concat-first16.bcf bcftools/bcftools-concat-last16.bcf -O b -o bcftools/bcftools-merge.bcf
-bcftools index bcftools/bcftools-merge.bcf
+bcftools merge bcftools/bcftools-concat-first10.bcf bcftools/bcftools-concat-last10.bcf -O b -o bcftools/bcftools-merge20.bcf
+bcftools index bcftools/bcftools-merge20.bcf
 ```
 
 ### Comparing and combining outputs
@@ -100,6 +143,7 @@ The steps above got us a quite raw sets of SNPs, but usually we want to apply so
 mkdir filtering
 bcftools view -v snps comparison/isec/0002.bcf -O b > filtering/snps.bcf
 bcftools index filtering/snps.bcf
+bcftools view -H filtering/snps.bcf | wc -l
 ```
 
 #### SNP-based filtering
@@ -114,6 +158,11 @@ Filters can also be specified as includes (-i), the equivalent of the one above 
 ```bash
 bcftools view -i 'QUAL>=20' -O b filtering/snps.bcf > filtering/snps.QS20i.bcf
 ```
+The have the same number of SNPs:
+```bash
+bcftools view -H filtering/snps.QS20.bcf | wc -l
+bcftools view -H filtering/snps.QS20i.bcf | wc -l
+```
 Comparing the contents show they are identical:
 ```bash
 diff -s <(bcftools view -H filtering/snps.QS20.bcf) <(bcftools view -H filtering/snps.QS20i.bcf)
@@ -122,6 +171,8 @@ diff -s <(bcftools view -H filtering/snps.QS20.bcf) <(bcftools view -H filtering
 An example to exclude SNPs with depth <100:
 ```bash
 bcftools view -e 'INFO/DP<100' -O b filtering/snps.bcf > filtering/snps.DP100.bcf
+# You can see this is quite an stringent filter:
+bcftools view -H filtering/snps.DP100.bcf | wc -l
 ```
 An important note here is to be aware that if the file is further processed so that only part of the individuals are used, the fields in INFO may not be updated and it would be then unreliable to filter out using any information from that field.
 
@@ -129,6 +180,15 @@ An important note here is to be aware that if the file is further processed so t
 Another typical filter is to remove SNPs with low mapping quality (RMS MQ: root mean square of the mapping quality of reads across all samples). For examples, all SNPs with RMS MQ < 20 can be discarded with the following command:
 ```bash
 bcftools view -e 'MQ<20' -O b filtering/snps.bcf > filtering/snps.MQ20.bcf
+```
+If you check the number of SNPs, you can see this filter doesn't remove any:
+```bash
+bcftools view -H filtering/snps.bcf | wc -l
+bcftools view -H filtering/snps.MQ20.bcf | wc -l
+```
+This is because all SNPS have a MQ=60:
+```bash
+bcftools query -f '%MQ\n' filtering/snps.bcf | less -S
 ```
 ##### Filter by allele frequency
 For population genetic analyses it is frequently advised to remove variants below a certain allele frequency, as these ones are difficult to tell apart from sequencing errors. For example, to exclude all SNPs with a minor allele frequency (MAF) below 5% we would run:
