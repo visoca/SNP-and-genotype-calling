@@ -15,6 +15,8 @@ Extras:<br>
   * [Population structure with NGSADMIX](ngsadmix.md)<br>
   * [PCA of genoypes with R](pca.md)<br>
   * [SNP and genotype calling with ANGSD](angsd.md)<br>
+  * [Genetic architecture of traits with GEMMA](https://visoca.github.io/popgenomworkshop-gwas_gemma/)<br>
+  * [Delimitation of contiguous regions of differentiation using Hidden Markov Models](https://visoca.github.io/popgenomworkshop-hmm/)<br>
 
 ---
 
@@ -35,5 +37,3 @@ Extras:<br>
 * [Novembre et al 2008](https://www.nature.com/articles/nature07331) - Example of using PCAs of genotypes to investigate population structure
 * [Korneliussen et al. 2014](https://bmcbioinformatics.biomedcentral.com/articles/10.1186/s12859-014-0356-4) - ANGSD publication
 * [Bhatia et al. 2013](http://genome.cshlp.org/content/23/9/1514.full) - Excellent paper about F<sub>ST</sub> estimation and interpretation.
-
-Add key Heliconius references??
