@@ -1,0 +1,32 @@
+bcftools view -h bcftools/bcftools-Hmel201001.bcf | grep "^#CHROM" | sed 's/.*FORMAT\t//; s/\t/\n/g' | wc -l
+32
+bcftools query -l bcftools/bcftools-Hmel201001.bcf | wc -l
+32
+bcftools view -H bcftools/bcftools-Hmel201001.bcf | wc -l
+409
+bcftools view -H -v snps bcftools/bcftools-Hmel201001.bcf | wc -l
+390
+bcftools view -H -v indels bcftools/bcftools-Hmel201001.bcf | wc -l
+19
+bcftools view -H -v snps bcftools/bcftools-Hmel201001.bcf | awk '$5 ~ /,/' | less -S
+Hmel201001      5775 ...
+bcftools view -H -v snps -m 3 bcftools/bcftools-Hmel201001.bcf | less -S
+Hmel201001      5775 ...
+bcftools view -H bcftools/bcftools-concat.bcf | wc -l
+639
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201008 | wc -l
+71
+bcftools view -H bcftools/bcftools-concat.bcf Hmel201001:5000-5500,Hmel201003:15000-20000 | wc -l
+12
+bcftools view -H filtering/snps.bcf | wc -l
+476
+bcftools view -H filtering/snps.QS20.bcf | wc -l
+397
+bcftools view -H filtering/snps.QS20i.bcf | wc -l
+397
+bcftools view -H filtering/snps.DP100.bcf | wc -l
+112
+bcftools view -H filtering/snps.MQ20.bcf | wc -l
+476
+bcftools view -H filtering/snps.NOGTDP3.MEANGTDP5.MAF005.Q30.SAMP13.bcf | wc -l
+58
