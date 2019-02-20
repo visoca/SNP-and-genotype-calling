@@ -2,7 +2,9 @@
 
 ANGSD is a suite of programmes for the analysis of NGS data. Among other things, it can be used to call SNP and genotypes using a varied range of approaches (e.g. it incorporates several SNP calling algorithms). The common theme of the programme is the use of a probabilistic framework that allows accounting for NGS-data uncertainties, especially with low-to-medium depth datasets. It is less polished than bcftools and GATK and the documentation is not as good. However, it enables a number of other analyses, such as the estimation of site frequency spectra, ABBABABA tests, the estimation of several population genetics statistics such as FST, Thetas, Tajima's D, etc.
 
-Here you can see a script to call SNPs in a similar fashion to bcftools or GATK, calling SNPs from three scaffolds in parallel, using 2 cores for each task:
+
+
+Here you can see a script to call SNPs in a similar fashion to bcftools or GATK, calling SNPs from three scaffolds in parallel, using 2 cores for each task. As with the previous exercises, you will need to have the indexed reference genome and a file with the BAM files.
 
 ```bash
 #!/bin/bash
