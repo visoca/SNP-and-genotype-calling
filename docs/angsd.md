@@ -1,6 +1,6 @@
 ## SNP and genotype calling with ANGSD
 
-ANGSD is a suite of programmes for the analysis of NGS data. Among other things, it can be used to call SNP and genotypes using a varied range of approaches (e.g. it incorporates several SNP calling algorithms). The common theme of the programme is the use of a probabilistic framework that allows accounting for NGS-data uncertainties, especially with low-to-medium depth datasets.  
+ANGSD is a suite of programmes for the analysis of NGS data. Among other things, it can be used to call SNP and genotypes using a varied range of approaches (e.g. it incorporates several SNP calling algorithms). The common theme of the programme is the use of a probabilistic framework that allows accounting for NGS-data uncertainties, especially with low-to-medium depth datasets. It is less polished than bcftools and GATK and the documentation is not as good. However, it enables a number of other analyses, such as the estimation of site frequency spectra, ABBABABA tests, the estimation of several population genetics statistics such as FST, Thetas, Tajima's D, etc.
 
 Here you can see a script to call SNPs in a similar fashion to bcftools or GATK, calling SNPs from three scaffolds in parallel, using 2 cores for each task:
 
@@ -58,11 +58,13 @@ angsd \
 -ref $GENOME \
 -r ${REGIONS[$I]}: \
 -out $OUTDIR/angsd-${REGIONS[$I]} \
+-minMapQ 20 \
+-minQ 20 \
 -doVcf 1 \
 -GL 1 \
 -doMaf 3 \
 -doMajorMinor 4 \
--SNP_pval 1e-3 \
+-SNP_pval 1e-6 \
 -doPost 1 \
 -doCounts 1 \
 -doGeno 11
@@ -84,3 +86,61 @@ rm $BAMLIST
 echo "=============================================================================="
 date
 ```
+The options used are:
+* `-nThreads 2`: Use two cores for computations
+* `-bam $BAMLIST`: List of BAM files (one per sample)
+* `-ref $GENOME`: Reference sequence
+* `-r ${REGIONS[$I]}:`: Regions to call variants from (notice
+* `-out $OUTDIR/angsd-${REGIONS[$I]}` output base name
+* `-minQ 20`: filter out bases with quality (BQ) <20
+* `-minMapQ 20`: filter out alignments with mapping quality (MQ) <20
+* `-doVcf 1`: output in VCF format
+* `-GL 1`: estimate genotype likelihoods using bcftools method (2-GATK, 3-SOAPsnp)
+* `-doMaf 3`: estimate allele frequencies using both
+* `-doMajorMinor 4`: Use reference allele as major (similar to bcftools and GATK)
+* `-SNP_pval 1e-6`: p-value for calling SNPs
+* `-doPost 1`: estimate genotype posterior probabilities using allele frequencies as priors (2-use uniform prior)
+* `-doCounts 1`: do and output allele counts
+* `-doGeno 8`: call genotypes and write posterior probability of genotypes
+
+You will see it generates several other files apart from the VCF/BCF files:
+```bash
+ls -lh angsd
+```
+>``total 8.7M``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 19 23:50 angsd-Hmel201001.arg``<br>
+>``-rw-r--r-- 1 bo1vsx bo 175K Feb 19 23:50 angsd-Hmel201001.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  153 Feb 19 23:50 angsd-Hmel201001.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  73K Feb 19 23:50 angsd-Hmel201001.geno.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 19 23:50 angsd-Hmel201001.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo  16K Feb 19 23:50 angsd-Hmel201001.mafs.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 176K Feb 19 23:50 angsd-Hmel201001.vcf.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  178 Feb 19 23:50 angsd-Hmel201001.vcf.gz.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 19 23:53 angsd-Hmel201002.arg``<br>
+>``-rw-r--r-- 1 bo1vsx bo 3.2M Feb 19 23:53 angsd-Hmel201002.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.6K Feb 19 23:53 angsd-Hmel201002.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.2M Feb 19 23:53 angsd-Hmel201002.geno.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 4.9K Feb 19 23:53 angsd-Hmel201002.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo 250K Feb 19 23:53 angsd-Hmel201002.mafs.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 3.5M Feb 19 23:53 angsd-Hmel201002.vcf.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 19 23:53 angsd-Hmel201002.vcf.gz.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 19 23:50 angsd-Hmel201003.arg``<br>
+>``-rw-r--r-- 1 bo1vsx bo  39K Feb 19 23:50 angsd-Hmel201003.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  138 Feb 19 23:50 angsd-Hmel201003.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  21K Feb 19 23:50 angsd-Hmel201003.geno.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 19 23:50 angsd-Hmel201003.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo 5.1K Feb 19 23:50 angsd-Hmel201003.mafs.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  38K Feb 19 23:50 angsd-Hmel201003.vcf.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  163 Feb 19 23:50 angsd-Hmel201003.vcf.gz.csi``<br>
+
+geno.gz files contain genotype posterior probabilities (3 values per genotype), mafs.gz contain allele frequencies
+
+As you can see the content of the VCF/BCF file differs quite a bit from bcftools and GATK: only the scaffolds/chromosomes analysed are included in the header, there are no quality scores nor allele counts (AC and AN) for the SNPs, and only biallelic SNPs are called. Some of these fields can be added a posteriori with bcftools, for example for AC and AC:
+```bash
+bcftools +fill-tags angsd/angsd-Hmel201001.bcf -- -t AC,AN | less -S
+```
+Also the number of called SNPs tend to be higher than with bcftools or GATK:
+```bash
+bcftools view -H angsd/angsd-Hmel201001.bcf | wc -l
+```
+Because of that, applying filters based on depths or fraction of samples with data is recommended. 
