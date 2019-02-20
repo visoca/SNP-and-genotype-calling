@@ -127,7 +127,7 @@ text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
 
-Now we will use an alternative method using the genotype covariance matrix:
+Now we will use an alternative method using the genotype covariance matrix (which results in a N x N matrix, being N the individuals):
 ```R
 ## calculate N x N genotype covariance matrix
 gmn<-apply(genotypes[,-(1:3)],1,mean)
