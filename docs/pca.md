@@ -122,7 +122,7 @@ plot(pcs[1,], pcs[2,], type="n", main = "PCA using genotype matrix", xlab = "PC1
 text(pcs[1,], pcs[2,],labels=rownames(pcs),col=id.colours,cex=0.5)
 plot(pcs[2,], pcs[3,], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
 text(pcs[2,], pcs[3,],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
 text(pcs[3,], pcs[4,],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
@@ -164,7 +164,7 @@ plot(pcs[1,], pcs[2,], type="n", main = "PCA using genotype covariance matrix", 
 text(pcs[1,], pcs[2,],labels=rownames(pcs),col=id.colours,cex=0.5)
 plot(pcs[2,], pcs[3,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC2", ylab = "PC3")
 text(pcs[2,], pcs[3,],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC2", ylab = "PC3")
+plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC3", ylab = "PC4")
 text(pcs[3,], pcs[4,],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
