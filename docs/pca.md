@@ -79,9 +79,9 @@ As you can see, ~50% of the variance is explained by the first 4 PCs. We will ex
 ```R
 pcs<-pca.genotypes$x
 pdf(file="genotype_matrix-pc1-pc4.pdf")
-plot(pcs[1,], pcs[2,], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
-plot(pcs[2,], pcs[3,], main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
-plot(pcs[3,], pcs[4,], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
+plot(pcs[,1], pcs[,2], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
+plot(pcs[,2], pcs[,3], main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
 dev.off()
 ```
 
@@ -109,21 +109,21 @@ id.symbols<-as.numeric(id.symbols)
 pcs<-pca.genotypes$x
 
 pdf(file="genotype_matrix-pc1-pc4-colsym.pdf")
-plot(pcs[1,], pcs[2,], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2", pch=id.symbols, col=id.colours)
-plot(pcs[2,], pcs[3,], main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3", pch=id.symbols, col=id.colours)
-plot(pcs[3,], pcs[4,], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4", pch=id.symbols, col=id.colours)
+plot(pcs[,1], pcs[,2], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2", pch=id.symbols, col=id.colours)
+plot(pcs[,2], pcs[,3], main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3", pch=id.symbols, col=id.colours)
+plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4", pch=id.symbols, col=id.colours)
 dev.off()
 ```
 
-Some genotypes seem a bit far from the rest, we may be interested in investigating that further. For that, we can plot the id of the samples;
+Some individuals seem to be in an unexpected group. Let's investigate that further by plotting the id of the samples;
 ```R
 pdf(file="genotype_matrix-pc1-pc4-labels.pdf")
-plot(pcs[1,], pcs[2,], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
-text(pcs[1,], pcs[2,],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[2,], pcs[3,], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
-text(pcs[2,], pcs[3,],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
-text(pcs[3,], pcs[4,],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,1, pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
+text(pcs[,1, pcs[,2],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,2, pcs[,3], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[,2, pcs[,3],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,3, pcs[,4], type="n", main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
+text(pcs[,3, pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
 
@@ -160,11 +160,11 @@ pcs<-pca.covar$x
 rownames(pcs)<-colnames(genotypes[,-(1:3)])
 
 pdf(file="genotype_covmatrix-pc1-pc4-labels.pdf")
-plot(pcs[1,], pcs[2,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC1", ylab = "PC2")
-text(pcs[1,], pcs[2,],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[2,], pcs[3,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC2", ylab = "PC3")
-text(pcs[2,], pcs[3,],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[3,], pcs[4,], type="n", main = "PCA using genotype covariance matrix", xlab = "PC3", ylab = "PC4")
-text(pcs[3,], pcs[4,],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,1], pcs[,2], type="n", main = "PCA using genotype covariance matrix", xlab = "PC1", ylab = "PC2")
+text(pcs[,1], pcs[,2],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,2], pcs[,3], type="n", main = "PCA using genotype covariance matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[,2], pcs[,3],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,3], pcs[,4], type="n", main = "PCA using genotype covariance matrix", xlab = "PC3", ylab = "PC4")
+text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
