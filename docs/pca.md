@@ -24,11 +24,13 @@ chmod +x bcf2bbgeno.pl
 # show help
 ./bcf2bbgeno.pl -h
 ```
-We are going to use ``bcf2bbgeno.pl`` to calculate the genotype posterior probabilites from the BCF file of snps that we generated in the previous sessions and save them in mean genotype format. We will need to run a command like this one, including the flag to include a header with the individuals names:
+We are going to use ``bcf2bbgeno.pl`` to calculate the genotype posterior probabilites from the BCF file of snps that we generated in the previous sessions and save them in mean genotype format. We will need to run a command like this one, including the flag to include a header with the sample names:
 ```bash
 mkdir pca
 ./bcf2bbgeno.pl -i ../filtering/snps.bcf -o snps.bbgeno -p H-W -a
 ```
+Be aware that samples here are not individuals, but individuals-tissue. For instance, 80I and 80A come from the same invidual, but from different tissues.
+
 To make sense of the PCA plots, we will also need the information about the race and sex of the samples, which can be copied from a shared directory in ShARC:
 ```bash
 cp /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/SNPgenocall/sample_race_sex.tsv ./ 
@@ -115,7 +117,7 @@ plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = 
 dev.off()
 ```
 
-Some individuals seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
+Some samples seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
 ```R
 pdf(file="genotype_matrix-pc1-pc4-labels.pdf")
 plot(pcs[,1], pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
@@ -127,7 +129,7 @@ text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
 
-Now we will use an alternative method using the genotype covariance matrix (which results in a N x N matrix, being N the individuals):
+Now we will use an alternative method using the genotype covariance matrix (which results in a N x N matrix, being N the samples):
 ```R
 ## calculate N x N genotype covariance matrix
 gmn<-apply(genotypes[,-(1:3)],1,mean)
@@ -168,3 +170,63 @@ plot(pcs[,3], pcs[,4], type="n", main = "PCA using genotype covariance matrix", 
 text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
+
+The resolution of this PCA is not great, because it is based in just a few hundreds of SNPs. Let's now download data for a tens of thousands. For that, first exit the R session:
+```R
+q()
+```
+And now copy the BCF file and get the mean genotypes:
+```bash
+# copy data
+cp /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/SNPgenocall/snps-large.bcf* ./ 
+# check number of SNPs
+bcftools view -H snps-large.bcf | wc -l
+# Get mean genotypes
+./bcf2bbgeno.pl -i snps-large.bcf -o snps-large.bbgeno -p H-W -a
+```
+Let's launch `R` again, do PCA and plot the first 4 PCs as before:
+```R
+## load genotypes
+genotypes<-read.table("snps-large.bbgeno",header=T, check.names=F)
+
+# Load info about samples
+id.info<-read.table("sample_race_sex.tsv", sep="\t", header=T)
+
+# sort as in the pcs
+id.info<-id.info[match(rownames(pcs), id.info$sample),]
+
+# colours
+id.colours<-as.character(id.info$race)
+id.colours[id.colours=="R"]<-"#E41A1C" # R as red
+id.colours[id.colours=="C"]<-"#377EB8" # C as blue
+mycol<-c("#E41A1C","#377EB8","#4DAF4A","#984EA3")
+
+# symbols
+id.symbols<-as.character(id.info$sex)
+id.symbols[id.symbols=="F"]<-1 # females as circles
+id.symbols[id.symbols=="M"]<-0 # males as squares
+id.symbols<-as.numeric(id.symbols)
+
+# do PCA
+pca.genotypes<-prcomp(t(genotypes[,-(1:3)]), center=TRUE, scale=FALSE)
+summary(pca.genotypes)
+
+# get PCs
+pcs<-pca.genotypes$x
+
+pdf(file="genotype_matrix-large-pc1-pc4-colsym.pdf")
+plot(pcs[,1], pcs[,2], main = "PCA using large genotype matrix", xlab = "PC1", ylab = "PC2", pch=id.symbols, col=id.colours)
+plot(pcs[,2], pcs[,3], main = "PCA using large genotype matrix", xlab = "PC2", ylab = "PC3", pch=id.symbols, col=id.colours)
+plot(pcs[,3], pcs[,4], main = "PCA using large genotype matrix", xlab = "PC3", ylab = "PC4", pch=id.symbols, col=id.colours)
+dev.off()
+
+pdf(file="genotype_matrix-large-pc1-pc4-labels.pdf")
+plot(pcs[,1], pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
+text(pcs[,1], pcs[,2],labels=rownames(pcs),col=id.colours,cex=1)
+plot(pcs[,2], pcs[,3], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[,2], pcs[,3],labels=rownames(pcs),col=id.colours,cex=1)
+plot(pcs[,3], pcs[,4], type="n", main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
+text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=1)
+dev.off()
+```
+Now you can see samples the separation is clearer, and the outliers now are different individuals, with one being clearly separated from all others, and the other clustering with the 'wrong' group.
