@@ -102,7 +102,7 @@ mycol<-c("#E41A1C","#377EB8","#4DAF4A","#984EA3")
 # symbols
 id.symbols<-as.character(id.info$sex)
 id.symbols[id.symbols=="F"]<-1 # females as circles
-id.symbols[id.symbols=="M"]<-2 # males as triangles
+id.symbols[id.symbols=="M"]<-0 # males as squares
 id.symbols<-as.numeric(id.symbols)
 
 # Get PCs
@@ -115,15 +115,15 @@ plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = 
 dev.off()
 ```
 
-Some individuals seem to be in an unexpected group. Let's investigate that further by plotting the id of the samples;
+Some individuals seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
 ```R
 pdf(file="genotype_matrix-pc1-pc4-labels.pdf")
-plot(pcs[,1, pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
-text(pcs[,1, pcs[,2],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[,2, pcs[,3], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
-text(pcs[,2, pcs[,3],labels=rownames(pcs),col=id.colours,cex=0.5)
-plot(pcs[,3, pcs[,4], type="n", main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
-text(pcs[,3, pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,1], pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
+text(pcs[,1], pcs[,2],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,2], pcs[,3], type="n", main = "PCA using genotype matrix", xlab = "PC2", ylab = "PC3")
+text(pcs[,2], pcs[,3],labels=rownames(pcs),col=id.colours,cex=0.5)
+plot(pcs[,3], pcs[,4], type="n", main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
+text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=0.5)
 dev.off()
 ```
 
