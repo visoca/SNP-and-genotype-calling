@@ -15,7 +15,7 @@ pwd
 >`´/fastdata/myuser/varcal`´<br>
 
 ## Programmes
-There are many different tools for SNP calling, we are going to use three of the most popular: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally,[ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for filtering files and picard tools for adding information about read groups to BAM files. All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
+There are many different tools for SNP calling, we are going to use three of the most popular: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally, [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for manipulating VCF/BCF files. Additional exercises will use [R](https://cran.r-project.org/), [NGSadmix](http://www.popgen.dk/software/index.php/NgsAdmix) (part of ANGSD), and [gemma](http://www.xzlab.org/software.html). All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
 
 ## Data
 We are going to use the directory `/fastdata/$USER/varcal` as the base working directory for this tutorial, let's create and change to it:
@@ -23,11 +23,11 @@ We are going to use the directory `/fastdata/$USER/varcal` as the base working d
 mkdir -p /fastdata/$USER/varcal
 cd /fastdata/$USER/varcal
 ```
-Now we need to copy the alignments in BAM format. We are not going to use the alignments produced in the previous sessions, because we need lignments with certain specific information on them for run some of the exercises. You can copy them with:
+Now we need to copy the alignments in BAM format. We are not going to use the alignments used in the previous sessions, because we need alignments with certain specific information on them to run some of the exercises. You can copy them with:
 ```bash
-cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/data/varcal/alignments ./
+cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/SNPgenocall/alignments_hisat2 ./alignments
 ```
-It is very important that all the BAM files are indexed, which can be done with the following commands:
+It is important that all the BAM files are indexed, which can be done with the following commands:
 ```bash
 ls alignments/*.bam | xargs -I {} sh -c 'samtools index {}'
 ```
