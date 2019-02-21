@@ -115,9 +115,9 @@ plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = 
 dev.off()
 ```
 It should look like this:
-![PCA](pca.png)
+![PCA](pca.png =500x500)
 
-Some samples seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
+There is some clear structure: PC1 separates samples by race in two groups. However, some samples seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
 ```R
 pdf(file="genotype_matrix-pc1-pc4-labels.pdf")
 plot(pcs[,1], pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
@@ -229,4 +229,4 @@ plot(pcs[,3], pcs[,4], type="n", main = "PCA using genotype matrix", xlab = "PC3
 text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=1)
 dev.off()
 ```
-Now you can see samples the separation is clearer, and the outliers now are different individuals, with one being clearly separated from all others, and the other clustering with the 'wrong' group. Why may this be happening?
+Now you can see samples the separation is clearer, and the outliers are different samples. There is one on the middle of the plot separated from all others, and there are other two clustering with the 'wrong' group. Why may this be happening?
