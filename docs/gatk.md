@@ -5,7 +5,7 @@ Before calling SNPs, we have to create the dictionary file for the genome:
 ```bash
 gatk CreateSequenceDictionary -R genome/Hmel2.fa -O genome/Hmel2.dict
 ```
-This will produce a dictionary file:
+This will produce a `.dict` file:
 ```bash
  ls -lh genome
 ```
@@ -13,9 +13,9 @@ This will produce a dictionary file:
 >``-rw-r--r-- 1 myuser cs 76M Feb 13 17:11 Hmel2.fa``<br>
 >``-rw-r--r-- 1 myuser cs 31K Feb 13 17:11 Hmel2.fa.fai``<br>
 
-__Important note:__ GATK is more picky than bcftools with regards to the content of the BAM files and requires to have read groups information appropriately encoded. The BAM files that will be use below have been produced to include such information, but it is something to bear in mind if plannig to use GATK. I have included in this repository two examples scripts on (1) how to run an aligner such as [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) to include read groups in the output BAM files ([hisat2.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/hisat2.sh)) and (2) how to run [picard tools](https://broadinstitute.github.io/picard/) to add read groups to the BAM files *a posteriori* ([rgsbams.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/rgsbams.sh)). 
+__Important note:__ GATK is more picky than bcftools with regards to the content of the BAM files and requires to have read groups information appropriately encoded. The BAM files that will be used below have been produced to include such information, but it is something to bear in mind if planning to use GATK. I have included in https://github.com/visoca/SNP-and-genotype-calling) two examples scripts on (1) how to run an aligner such as [HISAT2](https://ccb.jhu.edu/software/hisat2/index.shtml) to include read groups in the output BAM files ([hisat2.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/hisat2.sh)) and (2) how to run [picard tools](https://broadinstitute.github.io/picard/) to add read groups to the BAM files *a posteriori* ([rgsbams.sh](https://github.com/visoca/SNP-and-genotype-calling/blob/master/scripts/rgsbams.sh)). 
 
-Now, let's prepare a batch script to run GATK on ShARC. As before, we will use an SGE array to call SNPs in parallel for three scaffolds, using 4 cores for each task.
+Now, let's prepare a batch script to run GATK on ShARC. As before, we will use an SGE array to call SNPs in parallel for three scaffolds, but this time we will be using 4 cores for each task.
 
 ```bash
 #!/bin/bash
@@ -104,7 +104,7 @@ bcftools index $BCF
 echo "=============================================================================="
 date
 ```
-We are going to use the tool called [``HaplotypeCaller``](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_haplotypecaller_HaplotypeCaller.php). This is a more recent and improved caller with respect to the previous widely used ``UnifiedGenotyper``. The main improvements are a better identification of indels and the implementation of a multialleic model for than 2 alleles. We are using a number of options:
+As mentioned before, we are using the tool called [``HaplotypeCaller``](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_haplotypecaller_HaplotypeCaller.php). This is a more recent and improved caller with respect to the previous widely used ``UnifiedGenotyper``. The main improvements are a better identification of indels and the implementation of a multialleic model for than 2 alleles. We are using a number of options:
 * `--java-options "-Xmx4g"`: GATK is a java program and as such it requires specifying the maximum memory that can be used
 * `HaplotypeCaller`: use this caller
 * `--base-quality-score-threshold 20`: filter out sites with base quality (BQ) <20
@@ -140,6 +140,6 @@ ls -lh gatk
 >``-rw-r--r-- 1 bo1vsx bo  58K Feb 18 03:54 gatk-Hmel201008.vcf``<br>
 >``-rw-r--r-- 1 bo1vsx bo  18K Feb 18 03:54 gatk-Hmel201008.vcf.idx``<br>
 
-The content of the logfiles can be quite long with many often harmless warnings. In our case, most of the warnings are due to missing data not allowing to calculate some VCF annotations. This can be annoying and result in pretty big files, but this can be avoiding by restricting the logging level to errors only with ``--verbosity ERROR``.
+The content of the logfiles can be quite long with many often harmless warnings. In our case, most of the warnings are due to missing data not allowing to calculate some VCF annotations. This can be annoying and result in pretty big files, but this can be avoided by restricting the logging level to errors only with ``--verbosity ERROR``.
 
 [Back to TOC](index.md)
