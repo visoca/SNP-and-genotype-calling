@@ -122,20 +122,23 @@ If all goes well, it should take no longer than a few minutes to get the jobs fi
 ```bash
 ls -lh gatk
 ```
+>```total 2.3M```<br>
+>``-rw-r--r-- 1 bo1vsx bo  96K Feb 18 03:55 gatk-Hmel201001.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  178 Feb 18 03:55 gatk-Hmel201001.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 964K Feb 18 03:55 gatk-Hmel201001.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo 353K Feb 18 03:55 gatk-Hmel201001.vcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  18K Feb 18 03:55 gatk-Hmel201001.vcf.idx``<br>
+>``-rw-r--r-- 1 bo1vsx bo  24K Feb 18 03:54 gatk-Hmel201003.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  157 Feb 18 03:54 gatk-Hmel201003.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 461K Feb 18 03:54 gatk-Hmel201003.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo  93K Feb 18 03:54 gatk-Hmel201003.vcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  18K Feb 18 03:54 gatk-Hmel201003.vcf.idx``<br>
+>``-rw-r--r-- 1 bo1vsx bo  17K Feb 18 03:54 gatk-Hmel201008.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  158 Feb 18 03:54 gatk-Hmel201008.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 131K Feb 18 03:54 gatk-Hmel201008.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo  58K Feb 18 03:54 gatk-Hmel201008.vcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  18K Feb 18 03:54 gatk-Hmel201008.vcf.idx``<br>
 
->``total 22M``<br>
->``-rw-r--r-- 1 myuser cs  92K Feb 16 14:28 gatk-Hmel201001.bcf``<br>
->``-rw-r--r-- 1 myuser cs  178 Feb 16 14:28 gatk-Hmel201001.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs 828K Feb 16 14:28 gatk-Hmel201001.log``<br>
->``-rw-r--r-- 1 myuser cs 334K Feb 16 14:28 gatk-Hmel201001.vcf``<br>
->``-rw-r--r-- 1 myuser cs  18K Feb 16 14:28 gatk-Hmel201001.vcf.idx``<br>
->``-rw-r--r-- 1 myuser cs  16M Feb 16 15:23 gatk-Hmel201002.log``<br>
->``-rw-r--r-- 1 myuser cs 5.0M Feb 16 15:21 gatk-Hmel201002.vcf``<br>
->``-rw-r--r-- 1 myuser cs  23K Feb 16 14:24 gatk-Hmel201003.bcf``<br>
->``-rw-r--r-- 1 myuser cs  157 Feb 16 14:24 gatk-Hmel201003.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs 378K Feb 16 14:24 gatk-Hmel201003.log``<br>
->``-rw-r--r-- 1 myuser cs  86K Feb 16 14:24 gatk-Hmel201003.vcf``<br>
->``-rw-r--r-- 1 myuser cs  18K Feb 16 14:24 gatk-Hmel201003.vcf.idx``<br>
 
 The content of the logfiles can be quite long with many often harmless warnings. In our case, most of the warnings are due to missing data not allowing to calculate some VCF annotations. This can be annoying and result in pretty big files, but this can be avoiding by restricting the logging level to errors only with ``--verbosity ERROR``.
 
