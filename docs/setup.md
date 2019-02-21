@@ -1,7 +1,7 @@
 ## 1. Initial set up
 First of all, please remind that this tutorial must be run using an interactive session in ShARC. For that, you should log in into ShARC with `ssh`, and then request an interactive session with `qrsh`. Your shell prompt should show `sharc-nodeXXX` (XXX being a number between 001 and 172) and not `@sharc-login1` nor `@sharc-login2`.
 
-For this particular tutorial, we are going to create and work on a directory called `varcal` in your /fastdata/$USER directory:
+For this particular practical, we are going to create and work on a directory called `varcal` in your /fastdata/$USER directory:
 ```bash
 cd /fastdata/$USER
 mkdir varcal
@@ -18,12 +18,7 @@ pwd
 There are many different tools for SNP calling, we are going to use three of the most popular: [bcftools](http://www.htslib.org/), [GATK](https://software.broadinstitute.org/gatk/), and, optionally, [ANGSD](http://www.popgen.dk/angsd/index.php/ANGSD). Additionally, we will use bcftools and awk for manipulating VCF/BCF files. Additional exercises will use [R](https://cran.r-project.org/), [NGSadmix](http://www.popgen.dk/software/index.php/NgsAdmix) (part of ANGSD), and [gemma](http://www.xzlab.org/software.html). All of them are already installed as part of the [Genomics Software Repository](http://soria-carrasco.staff.shef.ac.uk/softrepo/).
 
 ## Data
-We are going to use the directory `/fastdata/$USER/varcal` as the base working directory for this tutorial, let's create and change to it:
-```bash
-mkdir -p /fastdata/$USER/varcal
-cd /fastdata/$USER/varcal
-```
-Now we need to copy the alignments in BAM format. We are not going to use the alignments used in the previous sessions, because we need alignments with certain specific information on them to run some of the exercises. You can copy them with:
+We need to copy alignments in BAM format. We are not going to use the same alignments used in the previous sessions, because we need them to contain certain specific information to run some of the exercises for this practical. You can copy them with:
 ```bash
 cp -r /usr/local/extras/Genomics/workshops/NGS_AdvSta_2019/SNPgenocall/alignments_hisat2 ./alignments
 ```
