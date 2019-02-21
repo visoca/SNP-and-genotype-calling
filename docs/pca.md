@@ -115,6 +115,7 @@ plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = 
 dev.off()
 ```
 It should look like this:
+
 ![PCA](pca.png)
 
 There is some clear structure: PC1 separates samples by race in two groups. However, some samples seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
