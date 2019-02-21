@@ -10,10 +10,10 @@ Let's start. We are going to create a directory for this practical, download the
 
 ```bash
 # create directory for PCA practical
-mkdir /fastdata/$USER/pca
+mkdir /fastdata/$USER/varcal/pca
 
 # change to directory
-cd /fastdata/$USER/pca
+cd /fastdata/$USER/varcal/pca
 
 # download bfc2bbgeno.pl script
 wget https://raw.githubusercontent.com/visoca/SNP-and-genotype-calling/master/scripts/bcf2bbgeno.pl
@@ -26,7 +26,6 @@ chmod +x bcf2bbgeno.pl
 ```
 We are going to use ``bcf2bbgeno.pl`` to calculate the genotype posterior probabilites from the BCF file of snps that we generated in the previous sessions and save them in mean genotype format. We will need to run a command like this one, including the flag to include a header with the sample names:
 ```bash
-mkdir pca
 ./bcf2bbgeno.pl -i ../filtering/snps.bcf -o snps.bbgeno -p H-W -a
 ```
 Be aware that samples here are not individuals, but individuals-tissue. For instance, 80I and 80A come from the same invidual, but from different tissues.
@@ -86,8 +85,7 @@ plot(pcs[,2], pcs[,3], main = "PCA using genotype matrix", xlab = "PC2", ylab = 
 plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4")
 dev.off()
 ```
-
-We can't see much like this, let's use the information about the samples (race and sex) and use that to assign colours to races and symbols to sexes:
+It seems there is some sort of structure, but we can't tell much more with this kind of plot. Let's use the information about the samples (race and sex) and use that to assign colours to races and symbols to sexes:
 ```R
 # Load info about samples
 id.info<-read.table("sample_race_sex.tsv", sep="\t", header=T)
@@ -116,6 +114,8 @@ plot(pcs[,2], pcs[,3], main = "PCA using genotype matrix", xlab = "PC2", ylab = 
 plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = "PC4", pch=id.symbols, col=id.colours)
 dev.off()
 ```
+It should look like this:
+![PCA](pca.png)
 
 Some samples seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
 ```R
@@ -229,4 +229,4 @@ plot(pcs[,3], pcs[,4], type="n", main = "PCA using genotype matrix", xlab = "PC3
 text(pcs[,3], pcs[,4],labels=rownames(pcs),col=id.colours,cex=1)
 dev.off()
 ```
-Now you can see samples the separation is clearer, and the outliers now are different individuals, with one being clearly separated from all others, and the other clustering with the 'wrong' group.
+Now you can see samples the separation is clearer, and the outliers now are different individuals, with one being clearly separated from all others, and the other clustering with the 'wrong' group. Why may this be happening?
