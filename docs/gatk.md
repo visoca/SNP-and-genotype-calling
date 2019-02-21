@@ -104,7 +104,7 @@ bcftools index $BCF
 echo "=============================================================================="
 date
 ```
-We are going to use the tool called [``HaplotypeCaller``](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_haplotypecaller_HaplotypeCaller.php). This is a more recent and improved caller with respect to the previous widely used ``UnifiedGenotyper``. The main improvements are a better identification of indels and the implementation of a multialleic model for >2 allele. We are using a number of options:
+We are going to use the tool called [``HaplotypeCaller``](https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_hellbender_tools_walkers_haplotypecaller_HaplotypeCaller.php). This is a more recent and improved caller with respect to the previous widely used ``UnifiedGenotyper``. The main improvements are a better identification of indels and the implementation of a multialleic model for than 2 alleles. We are using a number of options:
 * `--java-options "-Xmx4g"`: GATK is a java program and as such it requires specifying the maximum memory that can be used
 * `HaplotypeCaller`: use this caller
 * `--base-quality-score-threshold 20`: filter out sites with base quality (BQ) <20
