@@ -122,7 +122,8 @@ If all goes well, it should take no longer than a few minutes to get the jobs fi
 ```bash
 ls -lh gatk
 ```
->```total 2.3M```<br>
+
+>``total 2.3M``<br>
 >``-rw-r--r-- 1 bo1vsx bo  96K Feb 18 03:55 gatk-Hmel201001.bcf``<br>
 >``-rw-r--r-- 1 bo1vsx bo  178 Feb 18 03:55 gatk-Hmel201001.bcf.csi``<br>
 >``-rw-r--r-- 1 bo1vsx bo 964K Feb 18 03:55 gatk-Hmel201001.log``<br>
@@ -138,7 +139,6 @@ ls -lh gatk
 >``-rw-r--r-- 1 bo1vsx bo 131K Feb 18 03:54 gatk-Hmel201008.log``<br>
 >``-rw-r--r-- 1 bo1vsx bo  58K Feb 18 03:54 gatk-Hmel201008.vcf``<br>
 >``-rw-r--r-- 1 bo1vsx bo  18K Feb 18 03:54 gatk-Hmel201008.vcf.idx``<br>
-
 
 The content of the logfiles can be quite long with many often harmless warnings. In our case, most of the warnings are due to missing data not allowing to calculate some VCF annotations. This can be annoying and result in pretty big files, but this can be avoiding by restricting the logging level to errors only with ``--verbosity ERROR``.
 
