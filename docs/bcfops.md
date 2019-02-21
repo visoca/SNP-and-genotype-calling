@@ -122,27 +122,25 @@ bcftools isec -O b comparison/bcftools.bcf comparison/gatk.bcf -p comparison/ise
 This will result in the following files:
 ```ls -lh comparison/isec```
 
->``total 265K``<br>
->``drwxr-xr-x 2 myuser cs 4.0K Feb 17 02:06 .``<br>
->``drwxr-xr-x 3 myuser cs 4.0K Feb 17 02:06 ..``<br>
->``-rw-r--r-- 1 myuser cs  31K Feb 17 02:06 0000.bcf``<br>
->``-rw-r--r-- 1 myuser cs  268 Feb 17 02:06 0000.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  41K Feb 17 02:06 0001.bcf``<br>
->``-rw-r--r-- 1 myuser cs  254 Feb 17 02:06 0001.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  76K Feb 17 02:06 0002.bcf``<br>
->``-rw-r--r-- 1 myuser cs  279 Feb 17 02:06 0002.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  85K Feb 17 02:06 0003.bcf``<br>
->``-rw-r--r-- 1 myuser cs  272 Feb 17 02:06 0003.bcf.csi``<br>
->``-rw-r--r-- 1 myuser cs  559 Feb 17 02:06 README.txt``<br>
+>``total 257K``<br>
+>``-rw-r--r-- 1 bo1vsx bo 31K Feb 18 04:05 0000.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo 268 Feb 18 04:05 0000.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 41K Feb 18 04:05 0001.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo 254 Feb 18 04:05 0001.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 76K Feb 18 04:05 0002.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo 277 Feb 18 04:05 0002.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 85K Feb 18 04:05 0003.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo 272 Feb 18 04:05 0003.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 559 Feb 18 04:05 README.txt``<br>
 
 The content of the BCF files is explained in the README.txt file:
 * ``0000.bcf``: private to bcftools
 * ``0001.bcf``: private to gatk
-* ``0002.bcf``: bcftools records shared with gatk
-* ``0003.bcf``: gatk records shared with gatk
+* ``0002.bcf``: bcftools SNPs shared with gatk
+* ``0003.bcf``: gatk SNPs shared with bcftools
 
 ### Filtering
-The steps above got us a quite raw sets of SNPs, but usually we want to apply some filters depending on the sort of downstream analyses that we intend to do. Filtering usually consist on establishin some sort of threshold for the SNP quality in the QUAL field and some of the variables encoded in the INFO field (e.g. depth, mapping quality, etc.), but more sophisticated filterin is possible based on genotype-specific variables (e.g. discarding genotypes below a certain quality or with fewer than a number of reads). Although in principle it is possible to do soft-filtering of SNPs and simply tag them as `PASSED` or `FAILED` in the VCF/BCF file, in practice it is more useful to do hard-filtering and simply remove all those SNPs (and genotypes) that did not meet our thresholds. We are going to focus on only the SNPs, so let's extract only the snps from the variants shared by bcftools and gatk:
+The steps above got us a a few hundreds of SNPs, but usually we want to apply some filters depending on the sort of downstream analyses that we intend to do. Filtering usually consist on establishing some sort of threshold for the SNP quality in the QUAL field or some of the variables encoded in the INFO field (e.g. depth, mapping quality, etc.), but more sophisticated filtering is possible based on genotype-specific (i.e. per-sample) variables (e.g. discarding genotypes below a certain quality or with too few reads). Although in principle it is possible to do soft-filtering of SNPs and simply tag them as `PASSED` or `FAILED` in the VCF/BCF file, in practice it is more useful to do hard-filtering and simply remove all those SNPs (and genotypes) that did not meet our thresholds. We are going to focus on the SNPs only, so let's extract only the snps from all the variants shared by bcftools and gatk:
 
 ```bash
 mkdir filtering
@@ -152,7 +150,7 @@ bcftools view -H filtering/snps.bcf | wc -l
 ```
 
 #### SNP-based filtering
-bcftools allows applying filter either with ``bcftools view`` or with ``bcftools filter`` and using information encoded in the QUAL or INFO fields, also allowing expression with multiple conditions and basic arithmetics (more details [here](https://samtools.github.io/bcftools/bcftools.html#expressions)). These are some examples:
+bcftools allows applying filters on many of its commands, but usually they are used with ``bcftools view`` or with ``bcftools filter``. Filtering can be done using information encoded in the QUAL or INFO fields, also allowing expression with multiple conditions and basic arithmetics (more details [here](https://samtools.github.io/bcftools/bcftools.html#expressions)). These are some examples:
 
 ##### Filter by SNP quality
 An obvious filter is to exclude (-e) SNPs below a quality threshold:
@@ -163,7 +161,7 @@ Filters can also be specified as includes (-i), the equivalent of the one above 
 ```bash
 bcftools view -i 'QUAL>=20' -O b filtering/snps.bcf > filtering/snps.QS20i.bcf
 ```
-The have the same number of SNPs:
+You can see they have the same number of SNPs:
 ```bash
 bcftools view -H filtering/snps.QS20.bcf | wc -l
 bcftools view -H filtering/snps.QS20i.bcf | wc -l
@@ -194,6 +192,7 @@ bcftools view -H filtering/snps.MQ20.bcf | wc -l
 This is because all SNPs have a MQ=60:
 ```bash
 bcftools query -f '%MQ\n' filtering/snps.bcf | less -S
+bcftools query -f '%MQ\n' filtering/snps.bcf | uniq
 ```
 ##### Filter by allele frequency
 For population genetic analyses it is frequently advised to remove variants below a certain allele frequency, as these ones are difficult to tell apart from sequencing errors. For example, to exclude all SNPs with a minor allele frequency (MAF) below 5% we would run:
@@ -207,11 +206,11 @@ bcftools view -e 'AN/2<13' -O b filtering/snps.bcf > filtering/snps.SAMP13.bcf
 ```
 
 #### Genotype-based filtering
-Filtering using the genotype fields can allow for some more precise filtering. For example, in cases of high depth heterogeneity across samples, it may be better to filter out by median genotype depth than bytotal depth across all samples. An example removing all SNPs where the mean genotype depth is below 5:
+Filtering using the genotype fields can allow for some more precise filtering. For example, in cases of high depth heterogeneity among samples, it may be better to filter out by median genotype depth than by total depth across all samples. An example removing all SNPs where the mean genotype depth is below 5:
 ```bash
 bcftools view -e 'AVG(FMT/DP)<5' -O b filtering/snps.bcf > filtering/snps.MEANGTDP5.bcf
 ```
-Sometimes it is reasonable to ignore genotype calls based on few reads. The following command remove all genotype calls (i.e. genotypes are substited by `./.`) based on less than 3 reads:
+Sometimes it is reasonable to ignore genotype calls based on few reads. The following command remove all genotype calls (i.e. genotypes are substituted by `./.`) informed by less than 3 reads:
 ```bash
 bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGTDP3.bcf
 ```
@@ -222,7 +221,6 @@ awk '{SUM=0; N=0; for(i=5; i<=NF; i++){if ($i!="./.") SUM+=1}; AVG=SUM/NF; print
 
 bcftools query -f "%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n" filtering/snps.NOGTDP3.bcf | \
 awk '{SUM=0; N=0; for(i=5; i<=NF; i++){if ($i!="./.") SUM+=1}; AVG=SUM/NF; print $1,$2,$3,$4,SUM,AVG}' | less -S
-
 ```
 
 #### Combining multiple filters 
@@ -233,7 +231,6 @@ bcftools view -e 'AVG(FMT/DP)<5 || MAF<0.05 || QUAL<30 || AN/2<13' -O b > filter
 # This results in quite a dramatic reduction in the number of SNPs:
 bcftools view -H filtering/snps.NOGTDP3.MEANGTDP5.MAF005.Q30.SAMP13.bcf | wc -l
 ```
-
-It is important to be careful with the order of the filters, as different combinations can result in different end results, especially if we subsample the individuals at some point. Also, some positions may end up being invariant or only variant with respect to the reference (i.e. private), or not having any individuals genotyped (you could have spotted some examples above...).
+__Final note:__ It is important to be careful with the order of the filters, as different combinations can result in different end results, especially if we subsample the individuals at some point. Also, some positions may end up being invariant or only variant with respect to the reference (i.e. private), or not having any individuals genotyped (you could have spotted some examples above...).
 
 [Back to TOC](index.md)
