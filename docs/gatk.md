@@ -37,8 +37,7 @@ REGIONS=(Hmel201001 Hmel201003 Hmel201008)
 GENOME=/fastdata/$USER/varcal/genome/Hmel2.fa
 
 # Path to directory with BAM files
-ALIDIR=/fastdata/$USER/varcal/alignments_hisat2
-# ALIDIR=/fastdata/$USER/varcal/alignments_rgs
+ALIDIR=/fastdata/$USER/varcal/alignments
 
 # Path to output directory
 OUTDIR=/fastdata/$USER/varcal/gatk
