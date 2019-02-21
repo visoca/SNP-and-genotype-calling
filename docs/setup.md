@@ -36,7 +36,8 @@ It is important to have all the BAM files indexed. To speed things up, we can us
 #$ -o indexbam.log
 #$ -N indexbam
 
-# load genomics software repository
+# Load genomics software repository
+# (safer to load it here in case the worker nodes don't inherit the environment)
 source /usr/local/extras/Genomics/.bashrc
 
 I=$(($SGE_TASK_ID-1))
