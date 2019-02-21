@@ -57,10 +57,8 @@ date
 echo "=============================================================================="
 
 # Load genomics software repository
+# (safer to load it here in case the worker nodes don't inherit the environment)
 source /usr/local/extras/Genomics/.bashrc
-
-# Create dictionary for genome
-# gatk CreateSequenceDictionary -R $GENOME -O ${GENOME%.fa}.dict
 
 cd $ALIDIR
 
