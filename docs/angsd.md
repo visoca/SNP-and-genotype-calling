@@ -109,39 +109,39 @@ You will see it generates several other files apart from the VCF/BCF files:
 ```bash
 ls -lh angsd
 ```
->``total 8.7M``<br>
->``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 19 23:50 angsd-Hmel201001.arg``<br>
->``-rw-r--r-- 1 bo1vsx bo 175K Feb 19 23:50 angsd-Hmel201001.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo  153 Feb 19 23:50 angsd-Hmel201001.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo  73K Feb 19 23:50 angsd-Hmel201001.geno.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 19 23:50 angsd-Hmel201001.log``<br>
->``-rw-r--r-- 1 bo1vsx bo  16K Feb 19 23:50 angsd-Hmel201001.mafs.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo 176K Feb 19 23:50 angsd-Hmel201001.vcf.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo  178 Feb 19 23:50 angsd-Hmel201001.vcf.gz.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 19 23:53 angsd-Hmel201002.arg``<br>
->``-rw-r--r-- 1 bo1vsx bo 3.2M Feb 19 23:53 angsd-Hmel201002.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.6K Feb 19 23:53 angsd-Hmel201002.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.2M Feb 19 23:53 angsd-Hmel201002.geno.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo 4.9K Feb 19 23:53 angsd-Hmel201002.log``<br>
->``-rw-r--r-- 1 bo1vsx bo 250K Feb 19 23:53 angsd-Hmel201002.mafs.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo 3.5M Feb 19 23:53 angsd-Hmel201002.vcf.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 19 23:53 angsd-Hmel201002.vcf.gz.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 19 23:50 angsd-Hmel201003.arg``<br>
->``-rw-r--r-- 1 bo1vsx bo  39K Feb 19 23:50 angsd-Hmel201003.bcf``<br>
->``-rw-r--r-- 1 bo1vsx bo  138 Feb 19 23:50 angsd-Hmel201003.bcf.csi``<br>
->``-rw-r--r-- 1 bo1vsx bo  21K Feb 19 23:50 angsd-Hmel201003.geno.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 19 23:50 angsd-Hmel201003.log``<br>
->``-rw-r--r-- 1 bo1vsx bo 5.1K Feb 19 23:50 angsd-Hmel201003.mafs.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo  38K Feb 19 23:50 angsd-Hmel201003.vcf.gz``<br>
->``-rw-r--r-- 1 bo1vsx bo  163 Feb 19 23:50 angsd-Hmel201003.vcf.gz.csi``<br>
+>``total 688K``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 18 05:07 angsd-Hmel201001.arg``<br>
+>``-rw-r--r-- 1 bo1vsx bo 175K Feb 18 05:07 angsd-Hmel201001.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  154 Feb 18 05:07 angsd-Hmel201001.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  76K Feb 18 05:07 angsd-Hmel201001.geno.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 18 05:07 angsd-Hmel201001.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo  16K Feb 18 05:07 angsd-Hmel201001.mafs.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 177K Feb 18 05:07 angsd-Hmel201001.vcf.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  179 Feb 18 05:07 angsd-Hmel201001.vcf.gz.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 18 05:07 angsd-Hmel201003.arg``<br>
+>``-rw-r--r-- 1 bo1vsx bo  39K Feb 18 05:07 angsd-Hmel201003.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  138 Feb 18 05:07 angsd-Hmel201003.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo  22K Feb 18 05:07 angsd-Hmel201003.geno.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.7K Feb 18 05:07 angsd-Hmel201003.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo 5.1K Feb 18 05:07 angsd-Hmel201003.mafs.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  39K Feb 18 05:07 angsd-Hmel201003.vcf.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  163 Feb 18 05:07 angsd-Hmel201003.vcf.gz.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.9K Feb 18 05:07 angsd-Hmel201008.arg``<br>
+>``-rw-r--r-- 1 bo1vsx bo  19K Feb 18 05:07 angsd-Hmel201008.bcf``<br>
+>``-rw-r--r-- 1 bo1vsx bo  147 Feb 18 05:07 angsd-Hmel201008.bcf.csi``<br>
+>``-rw-r--r-- 1 bo1vsx bo 8.8K Feb 18 05:07 angsd-Hmel201008.geno.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo 1.6K Feb 18 05:07 angsd-Hmel201008.log``<br>
+>``-rw-r--r-- 1 bo1vsx bo 2.5K Feb 18 05:07 angsd-Hmel201008.mafs.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  19K Feb 18 05:07 angsd-Hmel201008.vcf.gz``<br>
+>``-rw-r--r-- 1 bo1vsx bo  174 Feb 18 05:07 angsd-Hmel201008.vcf.gz.csi``<br>
 
-geno.gz files contain genotype posterior probabilities (3 values per genotype), mafs.gz contain allele frequencies
+In this case, `geno.gz` files contain genotype posterior probabilities (3 values per genotype) and `mafs.gz` contain allele frequencies. However, other files may be generated depending on the options used.
 
 As you can see the content of the VCF/BCF file differs quite a bit from bcftools and GATK: only the scaffolds/chromosomes analysed are included in the header, there are no quality scores nor allele counts (AC and AN) for the SNPs, and only biallelic SNPs are called. Some of these fields can be added a posteriori with bcftools, for example for AC and AC:
 ```bash
 bcftools +fill-tags angsd/angsd-Hmel201001.bcf -- -t AC,AN | less -S
 ```
-Also the number of called SNPs tend to be higher than with bcftools or GATK:
+Also you can see the number of called SNPs tend to be higher than with bcftools or GATK:
 ```bash
 bcftools view -H angsd/angsd-Hmel201001.bcf | wc -l
 ```
