@@ -58,7 +58,7 @@ Or the mean genotype quality:
 ```bash 
 # For all genotypes (uncalled ones = 0)
 bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GQ]\n' bcftools/bcftools-Hmel201001.bcf | \
-awk '{SUM=0; for(i=5; i<=NF; i++){SUM+=$i}; AVG=SUM/NF; print $1,$2,$3,$4,AVG}' | less -S
+awk '{SUM=0; N=0; for(i=5; i<=NF; i++){N+=1; SUM+=$i}; AVG=SUM/N; print $1,$2,$3,$4,AVG}' | less -S
 # Only for called genotypes:
 bcftools query -f '%CHROM\t%POS\t%REF\t%ALT[\t%GQ]\n' bcftools/bcftools-Hmel201001.bcf | \
 awk '{SUM=0; N=0; for(i=5; i<=NF; i++){SUM+=$i; if ($i>0) N+=1}; AVG=SUM/N; print $1,$2,$3,$4,AVG}' | less -S
