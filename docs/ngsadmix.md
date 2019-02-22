@@ -130,7 +130,7 @@ you should see something like this:
 >``> ``<br>
 
 Now let's load the admixture proportions, the information about the individuals, and let's do some plotting:
-```R
+```r
 # Load admixture proportions
 admix<-t(as.matrix(read.table("ngsadmix/snps_K2.qopt")))
 
@@ -178,7 +178,7 @@ __Important:__ You may notice the results vary across runs. This happens when th
 
 Further analysis with K=3:
 
-```R
+```r
 # Load admixture proportions
 admix<-t(as.matrix(read.table("ngsadmix/snps_K3.qopt")))
 
