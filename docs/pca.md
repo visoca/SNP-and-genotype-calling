@@ -63,21 +63,21 @@ and you should see something like this:
 
 Bear in mind that the commands hereafter are R commands. First, let's load the genotypes:
 
-```R
+```r
 ## load genotypes
 genotypes<-read.table("snps.bbgeno",header=T, check.names=F)
 head(genotypes)
 ```
 We can now do a the PCA with the genotype matrix excluding the first 3 columns that contain information for SNP id, reference allele and alternate allele:
-```R
+```r
 pca.genotypes<-prcomp(t(genotypes[,-(1:3)]), center=TRUE, scale=FALSE)
 ```
 then we can have a look at the proportion of variance explained by each PC:
-```R
+```r
 summary(pca.genotypes)
 ```
 As you can see, ~50% of the variance is explained by the first 4 PCs. We will extract the PCs vectors and plot them by pairs (i.e. PC1xPC2, PC2xPC3, PC3xPC4):
-```R
+```r
 pcs<-pca.genotypes$x
 pdf(file="genotype_matrix-pc1-pc4.pdf")
 plot(pcs[,1], pcs[,2], main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
@@ -86,7 +86,7 @@ plot(pcs[,3], pcs[,4], main = "PCA using genotype matrix", xlab = "PC3", ylab = 
 dev.off()
 ```
 It seems there is some sort of structure, but we can't tell much more with this kind of plot. Let's use the information about the samples (race and sex) and use that to assign colours to races and symbols to sexes:
-```R
+```r
 # Load info about samples
 id.info<-read.table("sample_race_sex.tsv", sep="\t", header=T)
 
@@ -119,7 +119,7 @@ It should look like this:
 ![PCA](pca.png)
 
 There is some clear structure: PC1 separates samples by race in two groups. However, some samples seem to be in an unexpected position. Let's investigate that further by plotting the id of the samples;
-```R
+```r
 pdf(file="genotype_matrix-pc1-pc4-labels.pdf")
 plot(pcs[,1], pcs[,2], type="n", main = "PCA using genotype matrix", xlab = "PC1", ylab = "PC2")
 text(pcs[,1], pcs[,2],labels=rownames(pcs),col=id.colours,cex=0.5)
@@ -131,7 +131,7 @@ dev.off()
 ```
 
 Now we will use an alternative method using the genotype covariance matrix (which results in a N x N matrix, being N the samples):
-```R
+```r
 ## calculate N x N genotype covariance matrix
 gmn<-apply(genotypes[,-(1:3)],1,mean)
 nids<-ncol(genotypes)-3
@@ -157,7 +157,7 @@ pca.covar<-prcomp(gcovarmat, center=TRUE, scale=FALSE)
 summary(pca.covar)
 ```
 You can see now that the first 4 PCs explain >80% of the variance. Let's plot the results:
-```R
+```r
 # Get PCs
 pcs<-pca.covar$x
 rownames(pcs)<-colnames(genotypes[,-(1:3)])
@@ -173,7 +173,7 @@ dev.off()
 ```
 
 The resolution of this PCA is not great, because it is based in just a few hundreds of SNPs. Let's now download data for a tens of thousands. For that, first exit the R session:
-```R
+```r
 q()
 ```
 And now copy the BCF file and get the mean genotypes:
@@ -186,7 +186,7 @@ bcftools view -H snps-large.bcf | wc -l
 ./bcf2bbgeno.pl -i snps-large.bcf -o snps-large.bbgeno -p H-W -a
 ```
 Let's launch `R` again, do PCA and plot the first 4 PCs as before:
-```R
+```r
 ## load genotypes
 genotypes<-read.table("snps-large.bbgeno",header=T, check.names=F)
 
