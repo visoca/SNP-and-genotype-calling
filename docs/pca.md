@@ -4,7 +4,7 @@ We are going to carry out PCA using R. For that, we will convert our BCF file to
 
 *p(AA) = p²; p(aa) = (1-p)²; p(Aa) = 2p(1-p)*
 
-being *p* the allele frequency of major/reference allele *A*. Genotype likelihoods are multiplied by these priors to obtain genotype posterior probabilities that are then encoded as mean genotypes (i.e. single values from 0 to 2) and saved to a file with extension .bbgeno. You can get some info about how to run the Perl script witn ``bcf2bbgeno.pl -h``. 
+being *p* the allele frequency of major/reference allele *A*. Genotype likelihoods are multiplied by these priors to obtain genotype posterior probabilities that are then encoded as mean genotypes (i.e. single values from 0 to 2) and saved to a file with extension `.bbgeno`. You can get some info about how to run the Perl script witn ``bcf2bbgeno.pl -h``. 
 
 Let's start. We are going to create a directory for this practical, download the ``bcf2bbgeno.pl`` from the github repository, grant execute permission, and show the help:
 
