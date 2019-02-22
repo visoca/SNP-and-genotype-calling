@@ -217,10 +217,10 @@ bcftools filter -S . -e 'FMT/DP<3' -O b filtering/snps.bcf > filtering/snps.NOGT
 To see the effect of this, we can calculate the number and fraction of individuals genotyped for each SNP:
 ```bash
 bcftools query -f "%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n" filtering/snps.bcf | \
-awk '{SUM=0; N=0; for(i=5; i<=NF; i++){if ($i!="./.") SUM+=1}; AVG=SUM/NF; print $1,$2,$3,$4,SUM,AVG}' | less -S
+awk '{SUM=0; N=0; for(i=5; i<=NF; i++){N+=1; if ($i!="./.") SUM+=1}; AVG=SUM/N; print $1,$2,$3,$4,SUM,AVG}' | less -S
 
 bcftools query -f "%CHROM\t%POS\t%REF\t%ALT[\t%GT]\n" filtering/snps.NOGTDP3.bcf | \
-awk '{SUM=0; N=0; for(i=5; i<=NF; i++){if ($i!="./.") SUM+=1}; AVG=SUM/NF; print $1,$2,$3,$4,SUM,AVG}' | less -S
+awk '{SUM=0; N=0; for(i=5; i<=NF; i++){N+=1; if ($i!="./.") SUM+=1}; AVG=SUM/N; print $1,$2,$3,$4,SUM,AVG}' | less -S
 ```
 
 #### Combining multiple filters 
