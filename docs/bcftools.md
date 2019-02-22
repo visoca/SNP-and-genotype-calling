@@ -4,7 +4,7 @@ BCFtools is a very popular programme to call SNPs and genotypes (and also to man
 gzip -d genome/Hmel2.fa.gz
 samtools faidx genome/Hmel2.fa
 ```
-This will produce a .fai index file:
+This will produce a `.fai` index file:
 ```bash
  ls -lh genome
 ```
