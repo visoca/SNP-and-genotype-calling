@@ -115,7 +115,7 @@ Let's see the total number of SNPs called by each programme:
 bcftools view -H comparison/bcftools.bcf | wc -l
 bcftools view -H comparison/gatk.bcf | wc -l
 ```
-As you can see both programmes called a similar number of SNPs. Let's now find out the SNPs that are shared between both calls using ``bcfools isec``:
+As you can see both programmes called a similar number of SNPs. Let's now find out the SNPs that are shared between both calls using ``bcftools isec``:
 ```bash
 bcftools isec -O b comparison/bcftools.bcf comparison/gatk.bcf -p comparison/isec
 ```
